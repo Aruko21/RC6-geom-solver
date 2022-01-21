@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Geometry Solver (RC6)</a>
+    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+        <a class="me-3 py-2 text-white text-decoration-none" href="#">Gasanov</a>
+        <a class="me-3 py-2 text-white text-decoration-none" href="#">Goltsov</a>
+        <a class="me-3 py-2 text-white text-decoration-none" href="#">Kosenkov</a>
+    </nav>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            Constraints
+                        </a>
+                    </li>
+                </ul>
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Section</span>
+                    <a class="link-secondary" href="#">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            Current month
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Solver</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button id="primitives-list-button" type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        Primitive
+                    </button>
+                    <ul class="dropdown-menu mx-0 shadow" aria-labelledby="primitives-list-button">
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-primitive="point">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Point
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-primitive="line">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#image-fill"></use></svg>
+                                Line
+                            </button>
+                        </li>
+                    </ul>
+
+                    <button id="constraints-list-button" type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        Constraint
+                    </button>
+                    <ul class="dropdown-menu mx-0 shadow" aria-labelledby="primitives-list-button">
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="joint">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Joint
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="distance">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#image-fill"></use></svg>
+                                Distance
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="parallelism">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Parallelism
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="perpendicularity">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Perpendicularity
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="verticality">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Verticality
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="horizontality">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Horizontality
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="angle">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Angle
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="point-to-line">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Point to Line
+                            </button>
+                        </li>
+                        <li>
+                            <button class="gs-primitive-create-btn dropdown-item d-flex gap-2 align-items-center" data-constraint="fixation">
+                                <svg class="bi" width="16" height="16"><use xlink:href="#files"></use></svg>
+                                Fixation
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <canvas class="w-100 border shadow-sm rounded" id="work-area"></canvas>
+        </main>
+    </div>
+</div>
+</body>
+</html>
