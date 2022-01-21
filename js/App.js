@@ -1,4 +1,6 @@
 import Action from "./Action";
+import Solver from "./Solver/Solver";
+
 
 export default class App {
     constructor(uicore) {
@@ -9,6 +11,7 @@ export default class App {
         this.constraints = [];
 
         this.currentAction = new Action();
+        this.solver = new Solver();
     }
 
     init() {
@@ -39,6 +42,8 @@ export default class App {
                 }
             }
         }
+
+        this.canvasField.addEventListener("needsolve", () => this.solver.solve(this.constraints));
     }
 
     initGui() {
