@@ -1,6 +1,8 @@
 import jacobiansMap from "./JacobiansMap";
 import GaussSolver from "./GaussSolver";
-import math from "mathjs";
+import { create, all } from 'mathjs'
+
+const math = create(all)
 
 export default class Solver {
     constructor() {
@@ -22,7 +24,7 @@ export default class Solver {
         let curX = math.clone(globalDeltaX);
         while (!math.smaller(math.abs(globalDeltaX), this.EPS) && currentIterNum < this.MAX_ITERATIONS_NUM) {
             // Получаем смещение deltaX
-            globalDeltaX = this._solveWithGauss(globalJacobian, -globalF);
+            globalDeltaX = this._solveWithGauss(globalJacobian, globalF.map((element) => -element));
 
             // Осуществляем шаг: X^r+1 = X^r + deltaX
             curX = math.add(curX, globalDeltaX);

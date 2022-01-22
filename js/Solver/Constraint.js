@@ -2,7 +2,7 @@ import jacobiansMap from "./JacobiansMap";
 
 export default class Constraint {
     static constraintMap = {
-        joint: "point",
+        joint: "joint",
         distance: "line",
         parallelism: "parallelism",
         perpendicularity: "perpendicularity",
@@ -13,14 +13,17 @@ export default class Constraint {
         fixation: "fixation"
     };
 
-    constructor() {
+    constructor({
+        elements,
+        type
+    }) {
         // список элементов, участвующих в ограничении (точки и линии)
-        this.elements = [];
+        this.elements = elements;
 
         // список элементов, участвующих в ограничении (лямбды)
         this.lambdasIdx = [];
         
-        this.type = Constraint.constraintMap.joint;
+        this.type = type;
         this.params = {
             distance: null,
             angle: null

@@ -1,14 +1,18 @@
 import Constraint from "./Constraint";
-import matrices, {cos} from "mathjs";
+import matrices, {cos, create, all} from "mathjs";
+
+const math = create(all)
 
 class JacobiansMap {
     constructor() {
     }
 
     getJacobian(constraint, deltaX, params) {
+        let j = 0;
+
         switch (constraint.type) {
             case Constraint.constraintMap.joint: {
-                const j = math.matrix([[1, 0, 0, 0, -1, 0],    //dx1
+                j = math.matrix([[1, 0, 0, 0, -1, 0],    //dx1
                     [0, 1, 0, 0, 1, 0],     //dx2
                     [0, 0, 1, 0, 0, -1],    //dy1
                     [0, 0, 0, 1, 0, 1],     //dy2
@@ -24,7 +28,7 @@ class JacobiansMap {
                             [3] - dy2, 
                             [4] - lambda
                 */
-                const j = math.matrix([[1 + 2 * deltaX[4], -2 * deltaX[4], 0, 0,
+                j = math.matrix([[1 + 2 * deltaX[4], -2 * deltaX[4], 0, 0,
                     2 * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x + deltaX[1])],    //dx1
                     [-2 * deltaX[4], 1 + 2 * deltaX[4], 0, 0,
                         2 * (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x + deltaX[0])],    //dx2
@@ -50,7 +54,7 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                const j = math.matrix([[1, 0, 0, 0, 0, 0, deltaX[8], -deltaX[8],
+                j = math.matrix([[1, 0, 0, 0, 0, 0, deltaX[8], -deltaX[8],
                     constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]],  //dx1
                     [0, 1, 0, 0, 0, 0, -deltaX[8], deltaX[8],
                         constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]],  //dx2
@@ -88,7 +92,7 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                const j = math.matrix([[1, 0, deltaX[8], -deltaX[8], 0, 0, 0, 0,
+                j = math.matrix([[1, 0, deltaX[8], -deltaX[8], 0, 0, 0, 0,
                     constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]],  //dx1
                     [0, 1, -deltaX[8], deltaX[8], 0, 0, 0, 0,
                         constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]],  //dx2
@@ -116,7 +120,7 @@ class JacobiansMap {
                 break;
             }
             case Constraint.constraintMap.verticality: {
-                const j = math.matrix([[1, 0, 0, 0, -1],   //dx1
+                j = math.matrix([[1, 0, 0, 0, -1],   //dx1
                     [0, 1, 0, 0, 1],    //dx2
                     [0, 0, 1, 0, 0],    //dy1
                     [0, 0, 0, 1, 0],    //dy2
@@ -125,7 +129,7 @@ class JacobiansMap {
                 break;
             }
             case Constraint.constraintMap.horizontality: {
-                const j = math.matrix([[1, 0, 0, 0, 0],    //dx1
+                j = math.matrix([[1, 0, 0, 0, 0],    //dx1
                     [0, 1, 0, 0, 0],    //dx2
                     [0, 0, 1, 0, -1],   //dy1
                     [0, 0, 0, 1, 1],    //dy2
@@ -148,7 +152,7 @@ class JacobiansMap {
                 const b = constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2];
                 const c = constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4];
                 const d = constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6];
-                const j = math.matrix([[1 + 2 * deltaX[8] * (b - (b ** 2 + d ** 2) * (cos(params.angle) ** 2)),
+                j = math.matrix([[1 + 2 * deltaX[8] * (b - (b ** 2 + d ** 2) * (cos(params.angle) ** 2)),
                     2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - b),
                     2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
                     2 * deltaX[8] * (2 * a * b * cos(params.angle) ** 2 - 2 * a * b - c * d),
@@ -241,7 +245,7 @@ class JacobiansMap {
                             [5] - dy3, 
                             [6] - lambda, 
                 */
-                const j = math.matrix([[1, 0, 0, 0, deltaX[6], -deltaX[6],
+                j = math.matrix([[1, 0, 0, 0, deltaX[6], -deltaX[6],
                     constraint.elements[0].y + deltaX[4] - constraint.elements[1].endPoint.y - deltaX[5]],      //dx1
                     [0, 1, 0, -deltaX[6], 0, deltaX[6],
                         (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]) +
@@ -267,7 +271,7 @@ class JacobiansMap {
                 break;
             }
             case Constraint.constraintMap.fixation: {
-                const j = math.matrix([[1, 0, 1, 0],    //dx1
+                j = math.matrix([[1, 0, 1, 0],    //dx1
                     [0, 1, 0, 1],    //dy1
                     [1, 0, 0, 0],    //lambda1
                     [0, 1, 0, 0],    //lambda2
@@ -283,6 +287,8 @@ class JacobiansMap {
     }
 
     getF(constraint, deltaX, params) {
+        let f = [];
+
         switch (constraint.type) {
             case Constraint.constraintMap.joint: {
                 /*  deltaX: [0] - dx1,          constraint.elements:    [0] - point1,
@@ -292,7 +298,7 @@ class JacobiansMap {
                             [4] - lambda1
                             [5] - lambda2
                 */
-                const f = [deltaX[0] - deltaX[4],   //  dF/dx1
+                f = [deltaX[0] - deltaX[4],   //  dF/dx1
                     deltaX[1] - deltaX[4],  //  dF/dx2
                     deltaX[2] - deltaX[5],  //  dF/dy1
                     deltaX[3] - deltaX[5],  //  dF/dy2
@@ -307,7 +313,7 @@ class JacobiansMap {
                             [3] - dy2,
                             [4] - lambda1
                 */
-                const f = [deltaX[0] + 2 * deltaX[4] * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x - deltaX[1]),     //  dF/dx1
+                f = [deltaX[0] + 2 * deltaX[4] * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x - deltaX[1]),     //  dF/dx1
                     deltaX[1] + 2 * deltaX[4] * (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x - deltaX[0]),    //  dF/dx2
                     deltaX[2] + 2 * deltaX[4] * (constraint.elements[0].y + deltaX[2] - constraint.elements[1].y - deltaX[3]),    //  dF/dy1
                     deltaX[3] + 2 * deltaX[4] * (constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[2]),    //  dF/dy2
@@ -326,7 +332,7 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                const f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]),  //  dF/dx1
+                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]),  //  dF/dx1
                     deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]),  //  dF/dx2
                     deltaX[2] + deltaX[8] * (constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]),  //  dF/dx3
                     deltaX[3] + deltaX[8] * (constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5]),  //  dF/dx4
@@ -351,7 +357,7 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                const f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]),  //  dF/dx1
+                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]),  //  dF/dx1
                     deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]),  //  dF/dx2
                     deltaX[2] + deltaX[8] * (constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1]),  //  dF/dx3
                     deltaX[3] + deltaX[8] * (constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]),  //  dF/dx4
@@ -372,7 +378,7 @@ class JacobiansMap {
                             [3] - dy2, 
                             [4] - lambda, 
                 */
-                const f = [deltaX[0] - deltaX[4],  //  dF/dx1
+                f = [deltaX[0] - deltaX[4],  //  dF/dx1
                     deltaX[1] + deltaX[4],  //  dF/dx2
                     deltaX[2],              //  dF/dy1
                     deltaX[3],              //  dF/dx2
@@ -386,7 +392,7 @@ class JacobiansMap {
                             [3] - dy2, 
                             [4] - lambda, 
                 */
-                const f = [deltaX[0],              //  dF/dx1
+                f = [deltaX[0],              //  dF/dx1
                     deltaX[1],              //  dF/dx2
                     deltaX[2] - deltaX[4],  //  dF/dy1
                     deltaX[3] + deltaX[4],  //  dF/dy2
@@ -405,7 +411,7 @@ class JacobiansMap {
                             [5] - dy3,
                             [6] - lambda 
                 */
-                const f = [deltaX[0] - deltaX[6] * (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]),             //  dF/dx1
+                f = [deltaX[0] - deltaX[6] * (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]),             //  dF/dx1
                     deltaX[1] + deltaX[6] * (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[1].beginPoint.y - deltaX[3]),  //  dF/dx2
                     deltaX[2] - deltaX[6] * (constraint.elements[0].y + deltaX[4] - constraint.elements[1].beginPoint.y - deltaX[3]),           //  dF/dx3
                     deltaX[3] + deltaX[6] * (constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[0].x - deltaX[1]),             //  dF/dy1
@@ -423,7 +429,7 @@ class JacobiansMap {
                             [2] - lambda1,
                             [3] - lambda2,
                 */
-                const f = [deltaX[0] + deltaX[2],                      //  dF/dx1
+                f = [deltaX[0] + deltaX[2],                      //  dF/dx1
                     deltaX[1] + deltaX[3],                      //  dF/dy1
                     constraint.elements[0].x + deltaX[0],       //  dF/dlambda1
                     constraint.elements[0].y + deltaX[1]];     //  dF/dlambda2

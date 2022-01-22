@@ -1,6 +1,7 @@
 import Action from "./Action";
 import Solver from "./Solver/Solver";
 import Plotter from "./Plotter";
+import ConstraintsManager from "./ConstraintsManager";
 
 
 export default class App {
@@ -22,6 +23,16 @@ export default class App {
             eventScope: this.canvasField,
             uicore: this.uicore
         });
+        this.constraintManager = new ConstraintsManager({
+            callback: (constraint) => {
+                this.constraints.push(constraint);
+                this.canvasField.dispatchEvent(new CustomEvent("needSolve"));
+                this.updateActionState(Action.actionsMap.edit);
+
+                console.log("add constraint: ", constraint);
+            },
+            eventScope: this.canvasField
+        })
     }
 
     init() {
@@ -37,22 +48,26 @@ export default class App {
                         }}));
                     break;
                 }
-                case Action.actionsMap.constraint: {
-                    this.canvasField.dispatchEvent(new CustomEvent("pointAdd", {detail: {
-                            point: event.point,
-                            objectType: this.currentAction.object
-                        }}));
-                    break;
-                }
             }
         }
+
+        this.canvasField.addEventListener("itemSelect", (event) => {
+            const selectedItem = event.detail.item;
+
+            if (this.currentAction.type === Action.actionsMap.constraint) {
+                this.canvasField.dispatchEvent(new CustomEvent("constraintItemAdd", {detail: {
+                    type: this.currentAction.object,
+                    item: selectedItem
+                }}));
+            }
+        });
 
         // this.uicore.view.onMouseMove = (event) => {
         //     Catch hover on every item
             // this.uicore.project.hitTestAll(event.point);
         // }
 
-        this.canvasField.addEventListener("needsolve", () => this.solver.solve(this.constraints));
+        this.canvasField.addEventListener("needSolve", () => this.solver.solve(this.constraints));
     }
 
     initGui() {

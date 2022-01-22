@@ -31,7 +31,9 @@ export default class PointDot extends Primitive {
         //     console.log("hover");
         // }
         this.pointView.onClick = () => {
-            console.log("click");
+            this.eventScope.dispatchEvent(new CustomEvent("itemSelect", {detail: {
+                item: this
+            }}));
         }
         this.pointView.onMouseDrag = (event) => {
             console.log("drag");

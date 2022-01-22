@@ -8,6 +8,7 @@ export default class Primitive {
         uicore
     } = {}) {
         this.uicore = uicore;
+        this.eventScope = this.uicore.view.element;
         this.type = null;
     }
 }

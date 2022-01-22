@@ -8,7 +8,7 @@ export default class Line extends Primitive {
     }) {
         super(args);
 
-        this.type = PointDot.primitivesMap.line;
+        this.type = Primitive.primitivesMap.line;
 
         this.beginPoint = beginPoint;
         this.endPoint = endPoint;
@@ -32,6 +32,15 @@ export default class Line extends Primitive {
             strokeWidth: 1
         };
 
+        this.init();
+    }
+
+    init() {
+        this.lineView.onClick = () => {
+            this.eventScope.dispatchEvent(new CustomEvent("itemSelect", {detail: {
+                item: this
+            }}));
+        }
     }
 
     getPoints() {
