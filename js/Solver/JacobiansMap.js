@@ -302,8 +302,8 @@ class JacobiansMap {
                     deltaX[1] - deltaX[4],  //  dF/dx2
                     deltaX[2] - deltaX[5],  //  dF/dy1
                     deltaX[3] - deltaX[5],  //  dF/dy2
-                    constraint.elements[1].x + deltaX[1] - constraint.elements[0].x - deltaX[0],    //  dF/dlambda1
-                    constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[2]];   //  dF/dlambda2
+                    constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x - deltaX[0],    //  dF/dlambda1
+                    constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[2]];   //  dF/dlambda2
                 break;
             }
             case Constraint.constraintMap.distance: {
@@ -400,6 +400,17 @@ class JacobiansMap {
                 break;
             }
             case Constraint.constraintMap.angle: {
+                /*  deltaX: [0] - dx1,           constraint.elements:    [0] - line1 (x1, x2, y1, y2)       params.distance
+                            [1] - dx2,                                   [1] - line2 (x3, x4, y3, y4)       params.angle
+                            [2] - dx3, 
+                            [3] - dx4, 
+                            [4] - dy1, 
+                            [5] - dy2, 
+                            [6] - dy3, 
+                            [7] - dy4, 
+                            [8] - lambda,
+                */
+                j = [];
                 break;
             }
             case Constraint.constraintMap.pointToLine: {
