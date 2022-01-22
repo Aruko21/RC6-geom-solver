@@ -1,5 +1,6 @@
 import Action from "./Action";
 import Solver from "./Solver/Solver";
+import Plotter from "./Plotter";
 
 
 export default class App {
@@ -12,6 +13,15 @@ export default class App {
 
         this.currentAction = new Action();
         this.solver = new Solver();
+        this.plotter = new Plotter({
+            callback: (primitive) => {
+                this.primitives.push(primitive);
+                this.canvasField.dispatchEvent(new CustomEvent("primitiveAdd"));
+                this.updateActionState(Action.actionsMap.edit);
+            },
+            eventScope: this.canvasField,
+            uicore: this.uicore
+        });
     }
 
     init() {
@@ -19,29 +29,28 @@ export default class App {
 
         this.uicore.view.onMouseDown = (event) => {
             console.log("mouse down event: ", event.point);
-            if (this.currentAction.type === Action.actionsMap.create) {
-                switch (this.currentAction.object) {
-                    case "point": {
-                        console.log("Point primitive creating");
-                        const pointView = new this.uicore.Path.Circle(new this.uicore.Point(event.point), 2);
-                        pointView.style = {
-                            fillColor: "black",
-                            strokeColor: "black",
-                            strokeWidth: 1
-                        };
-                        this.primitives.push(pointView);
-                        break;
-                    }
-                    case "line": {
-                        console.log("Line primitive creating");
-                        break;
-                    }
-                    default: {
-                        console.error("Unknown type of primitive: ", this.currentAction.object)
-                    }
+            switch (this.currentAction.type) {
+                case Action.actionsMap.create: {
+                    this.canvasField.dispatchEvent(new CustomEvent("pointAdd", {detail: {
+                            point: event.point,
+                            objectType: this.currentAction.object
+                        }}));
+                    break;
+                }
+                case Action.actionsMap.constraint: {
+                    this.canvasField.dispatchEvent(new CustomEvent("pointAdd", {detail: {
+                            point: event.point,
+                            objectType: this.currentAction.object
+                        }}));
+                    break;
                 }
             }
         }
+
+        // this.uicore.view.onMouseMove = (event) => {
+        //     Catch hover on every item
+            // this.uicore.project.hitTestAll(event.point);
+        // }
 
         this.canvasField.addEventListener("needsolve", () => this.solver.solve(this.constraints));
     }
@@ -52,6 +61,7 @@ export default class App {
         this.uicore.view.onKeyDown = (event) => {
             if (event.key === "escape") {
                 this.updateActionState(Action.actionsMap.edit)
+                this.canvasField.dispatchEvent(new Event("cancel"));
             }
         }
 
