@@ -20,6 +20,9 @@ export default class PointDot extends Primitive {
             strokeWidth: 1
         };
 
+        this.globalId = null;
+        this.localOffset = null;
+
         this.init();
     }
 
@@ -60,5 +63,9 @@ export default class PointDot extends Primitive {
         // this.pointView.position = this.pointView.position.add(delta);
         // this.point = this.pointView.position;
         console.log("check point view: ", this.pointView);
+    }
+
+    getPoints() {
+        return [this,];
     }
 }

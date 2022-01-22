@@ -8,6 +8,8 @@ export default class Line extends Primitive {
     }) {
         super(args);
 
+        this.type = PointDot.primitivesMap.line;
+
         this.beginPoint = beginPoint;
         this.endPoint = endPoint;
         this.angle = endPoint.point.subtract(beginPoint.point).angle;
@@ -30,5 +32,9 @@ export default class Line extends Primitive {
             strokeWidth: 1
         };
 
+    }
+
+    getPoints() {
+        return [this.beginPoint, this.endPoint];
     }
 }
