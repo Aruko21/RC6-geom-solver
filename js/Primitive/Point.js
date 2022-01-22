@@ -19,5 +19,17 @@ export default class PointDot extends Primitive {
 
         // point.x, point.y
         this.point = null;
+
+        this.type = PointDot.primitivesMap.point;
+
+        this.globalId = null;
+        this.localOffset = null;
+
+        // ???
+        this.globalRowNum = null;
+    }
+
+    getPoints() {
+        return [this,];
     }
 }
