@@ -12,13 +12,13 @@ class JacobiansMap {
 
         switch (constraint.type) {
             case Constraint.constraintMap.joint: {
-                j = math.matrix([[1, 0, 0, 0, -1, 0],    //dx1
+                j = [[1, 0, 0, 0, -1, 0],    //dx1
                     [0, 1, 0, 0, 1, 0],     //dx2
                     [0, 0, 1, 0, 0, -1],    //dy1
                     [0, 0, 0, 1, 0, 1],     //dy2
                     [-1, 1, 0, 0, 0, 0],    //lambda1
                     [0, 0, -1, 1, 0, 0]     //lambda2
-                ]);
+                ];
                 break;
             }
             case Constraint.constraintMap.distance: {
@@ -28,19 +28,19 @@ class JacobiansMap {
                             [3] - dy2, 
                             [4] - lambda
                 */
-                j = math.matrix([[1 + 2 * deltaX[4], -2 * deltaX[4], 0, 0,
-                    2 * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x + deltaX[1])],    //dx1
+                j = [[1 + 2 * deltaX[4], -2 * deltaX[4], 0, 0,
+                    2 * (constraint.elements[0].point.x + deltaX[0] - constraint.elements[1].point.x + deltaX[1])],    //dx1
                     [-2 * deltaX[4], 1 + 2 * deltaX[4], 0, 0,
-                        2 * (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x + deltaX[0])],    //dx2
+                        2 * (constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x + deltaX[0])],    //dx2
                     [0, 0, 1 + 2 * deltaX[4], -2 * deltaX[4],
-                        2 * (constraint.elements[0].y + deltaX[2] - constraint.elements[1].y + deltaX[3])],    //dy1
+                        2 * (constraint.elements[0].point.y + deltaX[2] - constraint.elements[1].point.y + deltaX[3])],    //dy1
                     [0, 0, -2 * deltaX[4], 1 + 2 * deltaX[4],
-                        2 * (constraint.elements[1].y + deltaX[3] - constraint.elements[0].y + deltaX[2])],    //dy2
-                    [2 * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x + deltaX[1]),
-                        2 * (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x + deltaX[0]),
-                        2 * (constraint.elements[0].y + deltaX[2] - constraint.elements[1].y + deltaX[3]),
-                        2 * (constraint.elements[1].y + deltaX[3] - constraint.elements[0].y + deltaX[2]), 0]  //lambda
-                ]);
+                        2 * (constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y + deltaX[2])],    //dy2
+                    [2 * (constraint.elements[0].point.x + deltaX[0] - constraint.elements[1].point.x + deltaX[1]),
+                        2 * (constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x + deltaX[0]),
+                        2 * (constraint.elements[0].point.y + deltaX[2] - constraint.elements[1].point.y + deltaX[3]),
+                        2 * (constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y + deltaX[2]), 0]  //lambda
+                ];
                 break;
             }
             case Constraint.constraintMap.parallelism: {
@@ -54,31 +54,31 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                j = math.matrix([[1, 0, 0, 0, 0, 0, deltaX[8], -deltaX[8],
-                    constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]],  //dx1
+                j = [[1, 0, 0, 0, 0, 0, deltaX[8], -deltaX[8],
+                    constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7]],  //dx1
                     [0, 1, 0, 0, 0, 0, -deltaX[8], deltaX[8],
-                        constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]],  //dx2
+                        constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6]],  //dx2
                     [0, 0, 1, 0, -deltaX[8], deltaX[8], 0, 0,
-                        constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]],  //dx3
+                        constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4]],  //dx3
                     [0, 0, 0, 1, deltaX[8], -deltaX[8], 0, 0,
-                        constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5]],  //dx4
+                        constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5]],  //dx4
                     [0, 0, -deltaX[8], deltaX[8], 1, 0, 0, 0,
-                        constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]],  //dy1
+                        constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]],  //dy1
                     [0, 0, deltaX[8], -deltaX[8], 0, 1, 0, 0,
-                        constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]],  //dy2
+                        constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3]],  //dy2
                     [deltaX[8], -deltaX[8], 0, 0, 0, 0, 1, 0,
-                        constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1]],  //dy3
+                        constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1]],  //dy3
                     [-deltaX[8], deltaX[8], 0, 0, 0, 0, 0, 1,
-                        constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]],  //dy4
-                    [constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7],
-                        constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6],
-                        constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4],
-                        constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5],
-                        constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2],
-                        constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3],
-                        constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1],
-                        constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0], 0]   //lambda
-                ]);
+                        constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]],  //dy4
+                    [constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7],
+                        constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6],
+                        constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4],
+                        constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5],
+                        constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2],
+                        constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3],
+                        constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1],
+                        constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0], 0]   //lambda
+                ];
                 break;
             }
             case Constraint.constraintMap.perpendicularity: {
@@ -92,49 +92,49 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                j = math.matrix([[1, 0, deltaX[8], -deltaX[8], 0, 0, 0, 0,
-                    constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]],  //dx1
+                j = [[1, 0, deltaX[8], -deltaX[8], 0, 0, 0, 0,
+                    constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3]],  //dx1
                     [0, 1, -deltaX[8], deltaX[8], 0, 0, 0, 0,
-                        constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]],  //dx2
+                        constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]],  //dx2
                     [deltaX[8], -deltaX[8], 1, 0, 0, 0, 0, 0,
-                        constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1]],  //dx3
+                        constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1]],  //dx3
                     [-deltaX[8], deltaX[8], 0, 1, 0, 0, 0, 0,
-                        constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]],  //dx4
+                        constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]],  //dx4
                     [0, 0, 0, 0, 1, 0, deltaX[8], -deltaX[8],
-                        constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]],  //dy1
+                        constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7]],  //dy1
                     [0, 0, 0, 0, 0, 1, -deltaX[8], deltaX[8],
-                        constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]],  //dy2
+                        constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6]],  //dy2
                     [0, 0, 0, 0, deltaX[8], -deltaX[8], 1, 0,
-                        constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5]],  //dy3
+                        constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5]],  //dy3
                     [0, 0, 0, 0, -deltaX[8], deltaX[8], 0, 1,
-                        constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]],  //dy4
-                    [constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3],
-                        constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2],
-                        constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1],
-                        constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0],
-                        constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7],
-                        constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6],
-                        constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5],
-                        constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4], 0]   //lambda
-                ]);
+                        constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4]],  //dy4
+                    [constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3],
+                        constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2],
+                        constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1],
+                        constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0],
+                        constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7],
+                        constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6],
+                        constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5],
+                        constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4], 0]   //lambda
+                ];
                 break;
             }
             case Constraint.constraintMap.verticality: {
-                j = math.matrix([[1, 0, 0, 0, -1],   //dx1
+                j = [[1, 0, 0, 0, -1],   //dx1
                     [0, 1, 0, 0, 1],    //dx2
                     [0, 0, 1, 0, 0],    //dy1
                     [0, 0, 0, 1, 0],    //dy2
                     [-1, 1, 0, 0, 0]    //lambda
-                ]);
+                ];
                 break;
             }
             case Constraint.constraintMap.horizontality: {
-                j = math.matrix([[1, 0, 0, 0, 0],    //dx1
+                j = [[1, 0, 0, 0, 0],    //dx1
                     [0, 1, 0, 0, 0],    //dx2
                     [0, 0, 1, 0, -1],   //dy1
                     [0, 0, 0, 1, 1],    //dy2
                     [0, 0, -1, 1, 0]    //lambda
-                ]);
+                ];
                 break;
             }
             case Constraint.constraintMap.angle: {
@@ -148,11 +148,11 @@ class JacobiansMap {
                             [7] - dy4, 
                             [8] - lambda,
                 */
-                const a = constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0];
-                const b = constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2];
-                const c = constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4];
-                const d = constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6];
-                j = math.matrix([[1 + 2 * deltaX[8] * (b - (b ** 2 + d ** 2) * (cos(params.angle) ** 2)),
+                const a = constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0];
+                const b = constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2];
+                const c = constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4];
+                const d = constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6];
+                j = [[1 + 2 * deltaX[8] * (b - (b ** 2 + d ** 2) * (cos(params.angle) ** 2)),
                     2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - b),
                     2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
                     2 * deltaX[8] * (2 * a * b * cos(params.angle) ** 2 - 2 * a * b - c * d),
@@ -233,7 +233,7 @@ class JacobiansMap {
                         2 * deltaX[8] * (2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - c), ,
                         2 * deltaX[8] * (c - 2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2),
                         0]    //lambda
-                ]);
+                ];
                 break;
             }
             case Constraint.constraintMap.pointToLine: {
@@ -245,37 +245,37 @@ class JacobiansMap {
                             [5] - dy3, 
                             [6] - lambda, 
                 */
-                j = math.matrix([[1, 0, 0, 0, deltaX[6], -deltaX[6],
-                    constraint.elements[0].y + deltaX[4] - constraint.elements[1].endPoint.y - deltaX[5]],      //dx1
+                j = [[1, 0, 0, 0, deltaX[6], -deltaX[6],
+                    constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].endPoint.point.y - deltaX[5]],      //dx1
                     [0, 1, 0, -deltaX[6], 0, deltaX[6],
-                        (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]) +
-                        (constraint.elements[0].y + deltaX[4] - constraint.elements[1].beginPoint.y - deltaX[3])],  //dx2
+                        (constraint.elements[1].endPoint.point.y + deltaX[5] - constraint.elements[0].point.y - deltaX[4]) +
+                        (constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].beginPoint.point.y - deltaX[3])],  //dx2
                     [0, 0, 1, deltaX[6], -deltaX[6], 0,
-                        constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[4]],               //dx3
+                        constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[4]],               //dx3
                     [0, -deltaX[6], deltaX[6], 1, 0, 0,
-                        constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[0].x - deltaX[1]],      //dy1
+                        constraint.elements[1].endPoint.point.x + deltaX[2] - constraint.elements[0].point.x - deltaX[1]],      //dy1
                     [deltaX[6], 0, -deltaX[6], 0, 1, 0,
-                        (constraint.elements[1].beginPoint.x + deltaX[0] - constraint.elements[0].x - deltaX[1]) +
-                        (constraint.elements[0].x + deltaX[1] - constraint.elements[1].endPoint.x - deltaX[2])],    //dy2
+                        (constraint.elements[1].beginPoint.point.x + deltaX[0] - constraint.elements[0].point.x - deltaX[1]) +
+                        (constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].endPoint.point.x - deltaX[2])],    //dy2
                     [-deltaX[6], deltaX[6], 0, 0, 0, 1,
-                        constraint.elements[0].x + deltaX[1] - constraint.elements[1].beginPoint.x - deltaX[0]],    //dy3
-                    [constraint.elements[0].y + deltaX[4] - constraint.elements[1].endPoint.y - deltaX[5],
-                        (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]) +
-                        (constraint.elements[0].y + deltaX[4] - constraint.elements[1].beginPoint.y - deltaX[3]),
-                        constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[4],
-                        constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[0].x - deltaX[1],
-                        (constraint.elements[1].beginPoint.x + deltaX[0] - constraint.elements[0].x - deltaX[1]) +
-                        (constraint.elements[0].x + deltaX[1] - constraint.elements[1].endPoint.x - deltaX[2]),
-                        constraint.elements[0].x + deltaX[1] - constraint.elements[1].beginPoint.x - deltaX[0], 0]    //lambda
-                ]);
+                        constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].beginPoint.point.x - deltaX[0]],    //dy3
+                    [constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].endPoint.point.y - deltaX[5],
+                        (constraint.elements[1].endPoint.point.y + deltaX[5] - constraint.elements[0].point.y - deltaX[4]) +
+                        (constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].beginPoint.point.y - deltaX[3]),
+                        constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[4],
+                        constraint.elements[1].endPoint.point.x + deltaX[2] - constraint.elements[0].point.x - deltaX[1],
+                        (constraint.elements[1].beginPoint.point.x + deltaX[0] - constraint.elements[0].point.x - deltaX[1]) +
+                        (constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].endPoint.point.x - deltaX[2]),
+                        constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].beginPoint.point.x - deltaX[0], 0]    //lambda
+                ];
                 break;
             }
             case Constraint.constraintMap.fixation: {
-                j = math.matrix([[1, 0, 1, 0],    //dx1
+                j = [[1, 0, 1, 0],    //dx1
                     [0, 1, 0, 1],    //dy1
                     [1, 0, 0, 0],    //lambda1
                     [0, 1, 0, 0],    //lambda2
-                ]);
+                ];
                 break;
             }
             default: {
@@ -313,12 +313,12 @@ class JacobiansMap {
                             [3] - dy2,
                             [4] - lambda1
                 */
-                f = [deltaX[0] + 2 * deltaX[4] * (constraint.elements[0].x + deltaX[0] - constraint.elements[1].x - deltaX[1]),     //  dF/dx1
-                    deltaX[1] + 2 * deltaX[4] * (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x - deltaX[0]),    //  dF/dx2
-                    deltaX[2] + 2 * deltaX[4] * (constraint.elements[0].y + deltaX[2] - constraint.elements[1].y - deltaX[3]),    //  dF/dy1
-                    deltaX[3] + 2 * deltaX[4] * (constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[2]),    //  dF/dy2
-                    (constraint.elements[1].x + deltaX[1] - constraint.elements[0].x - deltaX[0]) ** 2 +
-                    (constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[2]) ** 2 - deltaX[4] ** 2];      //  dF/dlambda
+                f = [deltaX[0] + 2 * deltaX[4] * (constraint.elements[0].point.x + deltaX[0] - constraint.elements[1].point.x - deltaX[1]),     //  dF/dx1
+                    deltaX[1] + 2 * deltaX[4] * (constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x - deltaX[0]),    //  dF/dx2
+                    deltaX[2] + 2 * deltaX[4] * (constraint.elements[0].point.y + deltaX[2] - constraint.elements[1].point.y - deltaX[3]),    //  dF/dy1
+                    deltaX[3] + 2 * deltaX[4] * (constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[2]),    //  dF/dy2
+                    (constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x - deltaX[0]) ** 2 +
+                    (constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[2]) ** 2 - params.distance**2];      //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.parallelism: {
@@ -332,18 +332,18 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]),  //  dF/dx1
-                    deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]),  //  dF/dx2
-                    deltaX[2] + deltaX[8] * (constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]),  //  dF/dx3
-                    deltaX[3] + deltaX[8] * (constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5]),  //  dF/dx4
-                    deltaX[4] + deltaX[8] * (constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]),  //  dF/dy1
-                    deltaX[5] + deltaX[8] * (constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]),  //  dF/dy2
-                    deltaX[6] + deltaX[8] * (constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1]),  //  dF/dy3
-                    deltaX[7] + deltaX[8] * (constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]),  //  dF/dy4
-                    (constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]) *
-                    (constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]) -
-                    (constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]) *
-                    (constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4])];        //  dF/dlambda
+                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7]),  //  dF/dx1
+                    deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6]),  //  dF/dx2
+                    deltaX[2] + deltaX[8] * (constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4]),  //  dF/dx3
+                    deltaX[3] + deltaX[8] * (constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5]),  //  dF/dx4
+                    deltaX[4] + deltaX[8] * (constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]),  //  dF/dy1
+                    deltaX[5] + deltaX[8] * (constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3]),  //  dF/dy2
+                    deltaX[6] + deltaX[8] * (constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1]),  //  dF/dy3
+                    deltaX[7] + deltaX[8] * (constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]),  //  dF/dy4
+                    (constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]) *
+                    (constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6]) -
+                    (constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]) *
+                    (constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4])];        //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.perpendicularity: {
@@ -357,18 +357,18 @@ class JacobiansMap {
                             [7] - dy4,
                             [8] - lambda, 
                 */
-                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.x + deltaX[2] - constraint.elements[1].endPoint.x - deltaX[3]),  //  dF/dx1
-                    deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]),  //  dF/dx2
-                    deltaX[2] + deltaX[8] * (constraint.elements[0].beginPoint.x + deltaX[0] - constraint.elements[0].endPoint.x - deltaX[1]),  //  dF/dx3
-                    deltaX[3] + deltaX[8] * (constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]),  //  dF/dx4
-                    deltaX[4] + deltaX[8] * (constraint.elements[1].beginPoint.y + deltaX[6] - constraint.elements[1].endPoint.y - deltaX[7]),  //  dF/dy1
-                    deltaX[5] + deltaX[8] * (constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6]),  //  dF/dy2
-                    deltaX[6] + deltaX[8] * (constraint.elements[0].beginPoint.y + deltaX[4] - constraint.elements[0].endPoint.y - deltaX[5]),  //  dF/dy3
-                    deltaX[7] + deltaX[8] * (constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]),  //  dF/dy4
-                    (constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]) *
-                    (constraint.elements[1].endPoint.x + deltaX[3] - constraint.elements[1].beginPoint.x - deltaX[2]) -
-                    (constraint.elements[0].endPoint.y + deltaX[5] - constraint.elements[0].beginPoint.y - deltaX[4]) *
-                    (constraint.elements[1].endPoint.y + deltaX[7] - constraint.elements[1].beginPoint.y - deltaX[6])];        //  dF/dlambda
+                f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.point.x + deltaX[2] - constraint.elements[1].endPoint.point.x - deltaX[3]),  //  dF/dx1
+                    deltaX[1] + deltaX[8] * (constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]),  //  dF/dx2
+                    deltaX[2] + deltaX[8] * (constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[1]),  //  dF/dx3
+                    deltaX[3] + deltaX[8] * (constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]),  //  dF/dx4
+                    deltaX[4] + deltaX[8] * (constraint.elements[1].beginPoint.point.y + deltaX[6] - constraint.elements[1].endPoint.point.y - deltaX[7]),  //  dF/dy1
+                    deltaX[5] + deltaX[8] * (constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6]),  //  dF/dy2
+                    deltaX[6] + deltaX[8] * (constraint.elements[0].beginPoint.point.y + deltaX[4] - constraint.elements[0].endPoint.point.y - deltaX[5]),  //  dF/dy3
+                    deltaX[7] + deltaX[8] * (constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4]),  //  dF/dy4
+                    (constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]) *
+                    (constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2]) -
+                    (constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4]) *
+                    (constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6])];        //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.verticality: {
@@ -378,11 +378,11 @@ class JacobiansMap {
                             [3] - dy2, 
                             [4] - lambda, 
                 */
-                f = [deltaX[0] - deltaX[4],  //  dF/dx1
+                f = [deltaX[0] - deltaX[4], //  dF/dx1
                     deltaX[1] + deltaX[4],  //  dF/dx2
                     deltaX[2],              //  dF/dy1
                     deltaX[3],              //  dF/dx2
-                    constraint.elements[0].endPoint.x + deltaX[1] - constraint.elements[0].beginPoint.x - deltaX[0]];  //  dF/dlambda
+                    constraint.elements[0].endPoint.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0]];  //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.horizontality: {
@@ -396,7 +396,7 @@ class JacobiansMap {
                     deltaX[1],              //  dF/dx2
                     deltaX[2] - deltaX[4],  //  dF/dy1
                     deltaX[3] + deltaX[4],  //  dF/dy2
-                    constraint.elements[0].endPoint.y + deltaX[3] - constraint.elements[0].beginPoint.y - deltaX[2]];  //  dF/dlambda
+                    constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[2]];  //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.angle: {
@@ -410,7 +410,19 @@ class JacobiansMap {
                             [7] - dy4, 
                             [8] - lambda,
                 */
-                j = [];
+                const a = constraint.elements[0].endPoint.point.point.x + deltaX[1] - constraint.elements[0].beginPoint.point.x - deltaX[0];
+                const b = constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2];
+                const c = constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4];
+                const d = constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6];
+                j = [deltaX[0] + 2*deltaX[8] * (a * (b**2 + d**2) * cos(params.angle)**2 - b * (a*b + c*d)),    //  dF/dx1
+                    deltaX[1] + 2*deltaX[8] * (b * (a*b + c*d) - a * (b**2 + d**2) * cos(params.angle)**2),     //  dF/dx2
+                    deltaX[2] + 2*deltaX[8] * (b * (a**2 + c**2) * cos(params.angle)**2 - a * (a*b + c*d)),     //  dF/dx3
+                    deltaX[3] + 2*deltaX[8] * (a * (a*b + c*d) - b * (a**2 + c**2) * cos(params.angle)**2),     //  dF/dx4
+                    deltaX[4] + 2*deltaX[8] * (c * (b**2 + d**2) * cos(params.angle)**2 - d * (a*b + c*d)),     //  dF/dy1
+                    deltaX[5] + 2*deltaX[8] * (d * (a*b + c*d) - c * (b**2 + d**2) * cos(params.angle)**2),     //  dF/dy2
+                    deltaX[6] + 2*deltaX[8] * (d * (a**2 + c**2) * cos(params.angle)**2 - c * (a*b + c*d)),     //  dF/dy3
+                    deltaX[7] + 2*deltaX[8] * (c * (a*b + c*d) - d * (a**2 + c**2) * cos(params.angle)**2),     //  dF/dy4
+                    ((a*b + c*d) - (a**2 + c**2) * (b**2 + d**2) * cos(params.angle)**2) ];   //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.pointToLine: {
@@ -422,16 +434,16 @@ class JacobiansMap {
                             [5] - dy3,
                             [6] - lambda 
                 */
-                f = [deltaX[0] - deltaX[6] * (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]),             //  dF/dx1
-                    deltaX[1] + deltaX[6] * (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[1].beginPoint.y - deltaX[3]),  //  dF/dx2
-                    deltaX[2] - deltaX[6] * (constraint.elements[0].y + deltaX[4] - constraint.elements[1].beginPoint.y - deltaX[3]),           //  dF/dx3
-                    deltaX[3] + deltaX[6] * (constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[0].x - deltaX[1]),             //  dF/dy1
-                    deltaX[4] - deltaX[6] * (constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[1].beginPoint.x + deltaX[0]),  //  dF/dy2
-                    deltaX[5] - deltaX[6] * (constraint.elements[0].x + deltaX[1] - constraint.elements[1].beginPoint.x + deltaX[0]),           //  dF/dy3
-                    (constraint.elements[0].x + deltaX[1] - constraint.elements[1].beginPoint.x + deltaX[0]) *
-                    (constraint.elements[1].endPoint.y + deltaX[5] - constraint.elements[0].y - deltaX[4]) -
-                    (constraint.elements[1].endPoint.x + deltaX[2] - constraint.elements[0].x - deltaX[1]) *
-                    (constraint.elements[0].y + deltaX[4] - constraint.elements[1].beginPoint.y - deltaX[3])];                                 //  dF/dlambda
+                f = [deltaX[0] - deltaX[6] * (constraint.elements[1].endPoint.point.y + deltaX[5] - constraint.elements[0].point.y - deltaX[4]),             //  dF/dx1
+                    deltaX[1] + deltaX[6] * (constraint.elements[1].endPoint.point.y + deltaX[5] - constraint.elements[1].beginPoint.point.y - deltaX[3]),  //  dF/dx2
+                    deltaX[2] - deltaX[6] * (constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].beginPoint.point.y - deltaX[3]),           //  dF/dx3
+                    deltaX[3] + deltaX[6] * (constraint.elements[1].endPoint.point.x + deltaX[2] - constraint.elements[0].point.x - deltaX[1]),             //  dF/dy1
+                    deltaX[4] - deltaX[6] * (constraint.elements[1].endPoint.point.x + deltaX[2] - constraint.elements[1].beginPoint.point.x + deltaX[0]),  //  dF/dy2
+                    deltaX[5] - deltaX[6] * (constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].beginPoint.point.x + deltaX[0]),           //  dF/dy3
+                    (constraint.elements[0].point.x + deltaX[1] - constraint.elements[1].beginPoint.point.x + deltaX[0]) *
+                    (constraint.elements[1].endPoint.point.y + deltaX[5] - constraint.elements[0].point.y - deltaX[4]) -
+                    (constraint.elements[1].endPoint.point.x + deltaX[2] - constraint.elements[0].point.x - deltaX[1]) *
+                    (constraint.elements[0].point.y + deltaX[4] - constraint.elements[1].beginPoint.point.y - deltaX[3])];                                 //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.fixation: {
@@ -442,8 +454,8 @@ class JacobiansMap {
                 */
                 f = [deltaX[0] + deltaX[2],                      //  dF/dx1
                     deltaX[1] + deltaX[3],                      //  dF/dy1
-                    constraint.elements[0].x + deltaX[0],       //  dF/dlambda1
-                    constraint.elements[0].y + deltaX[1]];     //  dF/dlambda2
+                    constraint.elements[0].point.x + deltaX[0],       //  dF/dlambda1
+                    constraint.elements[0].point.y + deltaX[1]];     //  dF/dlambda2
                 break;
             }
             default: {
