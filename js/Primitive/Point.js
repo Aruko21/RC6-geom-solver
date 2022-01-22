@@ -24,9 +24,6 @@ export default class PointDot extends Primitive {
 
         this.globalId = null;
         this.localOffset = null;
-
-        // ???
-        this.globalRowNum = null;
     }
 
     getPoints() {

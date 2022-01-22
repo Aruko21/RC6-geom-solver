@@ -18,10 +18,13 @@ export default class Constraint {
         this.elements = [];
 
         // список элементов, участвующих в ограничении (лямбды)
-        this.lambdas = [];
+        this.lambdasIdx = [];
         
         this.type = Constraint.constraintMap.joint;
-        this.params = {};
+        this.params = {
+            distance: null,
+            angle: null
+        };
         // params.distance = что-то
         // params.angle = угол
     }
