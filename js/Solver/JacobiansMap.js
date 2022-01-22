@@ -12,13 +12,13 @@ class JacobiansMap {
 
         switch (constraint.type) {
             case Constraint.constraintMap.joint: {
-                j = math.matrix([[1, 0, 0, 0, -1, 0],    //dx1
+                j = [[1, 0, 0, 0, -1, 0],    //dx1
                     [0, 1, 0, 0, 1, 0],     //dx2
                     [0, 0, 1, 0, 0, -1],    //dy1
                     [0, 0, 0, 1, 0, 1],     //dy2
                     [-1, 1, 0, 0, 0, 0],    //lambda1
                     [0, 0, -1, 1, 0, 0]     //lambda2
-                ]);
+                ];
                 break;
             }
             case Constraint.constraintMap.distance: {
@@ -302,8 +302,8 @@ class JacobiansMap {
                     deltaX[1] - deltaX[4],  //  dF/dx2
                     deltaX[2] - deltaX[5],  //  dF/dy1
                     deltaX[3] - deltaX[5],  //  dF/dy2
-                    constraint.elements[1].x + deltaX[1] - constraint.elements[0].x - deltaX[0],    //  dF/dlambda1
-                    constraint.elements[1].y + deltaX[3] - constraint.elements[0].y - deltaX[2]];   //  dF/dlambda2
+                    constraint.elements[1].point.x + deltaX[1] - constraint.elements[0].point.x - deltaX[0],    //  dF/dlambda1
+                    constraint.elements[1].point.y + deltaX[3] - constraint.elements[0].point.y - deltaX[2]];   //  dF/dlambda2
                 break;
             }
             case Constraint.constraintMap.distance: {

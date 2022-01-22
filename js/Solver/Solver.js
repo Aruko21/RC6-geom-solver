@@ -1,13 +1,15 @@
 import jacobiansMap from "./JacobiansMap";
 import GaussSolver from "./GaussSolver";
 import { create, all } from 'mathjs'
+import Constraint from "./Constraint";
 
 const math = create(all)
 
 export default class Solver {
     constructor() {
         this.EPS = 1e-6;
-        this.MAX_ITERATIONS_NUM = 1e3;
+        this.MAX_ITERATIONS_NUM = 1e2;
+        this.INITIAL_VALUE = 1e-3;
         this.gaussSolver = new GaussSolver();
     }
 
@@ -15,28 +17,33 @@ export default class Solver {
         // Создать глобальный вектор неизвестных 
         // Сначала лямбды, затем изменения координат, и так для каждого ограничения: [dx_i, dy_i, lambda_i]
         let { globalDeltaX, globalPointsList } = this._parseConstraints(constraints);
-        
-        // Ансамблирование по сопрягающимся точкам
-        let { globalJacobian, globalF } = this._ensemble(constraints, globalDeltaX, globalPointsList);
 
         // Основной цикл
         let currentIterNum = 0;
-        let curX = math.clone(globalDeltaX);
-        while (!math.smaller(math.abs(globalDeltaX), this.EPS) && currentIterNum < this.MAX_ITERATIONS_NUM) {
-            // Получаем смещение deltaX
-            globalDeltaX = this._solveWithGauss(globalJacobian, globalF.map((element) => -element));
+        let curX = [...globalDeltaX];
+        while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce(
+            (res, current) => {
+                return !!(res && current);
+            })
+                && currentIterNum < this.MAX_ITERATIONS_NUM) {
+
+            // Ансамблирование по сопрягающимся точкам
+            let { globalJacobian, globalF } = this._ensemble(constraints, curX, globalPointsList);
+
+            globalDeltaX = this.gaussSolver.solve(globalJacobian, globalF.map(element => -element));
+            // globalDeltaX = this._solveWithGauss(globalJacobian, globalF.map((element) => -element));
 
             // Осуществляем шаг: X^r+1 = X^r + deltaX
             curX = math.add(curX, globalDeltaX);
+
+            currentIterNum++;
         }
 
         // Обновляем значения координат
-        constraints.forEach(() => {
-            globalPointsList.forEach(point => {
-               point.x += curX[point.globalId];
-               point.y += curX[point.globalId + point.localOffset];
-            });
-        })
+        globalPointsList.forEach(point => {
+           point.x += curX[point.globalId];
+           point.y += curX[point.globalId + point.localOffset];
+        });
     }
 
     _parseConstraints(constraints) {
@@ -65,19 +72,18 @@ export default class Solver {
                     } else {
                         // Не нашли индекс, добавляем уникальную точку в общий список, обновляя индекс точки (ниже)
                         globalPointsList.push(point);
+                        point.globalId = globalPointsList.length - 1;
 
                         // Также ниже добавляем новую точку в глобальный список неизвестных
                         // По сути сохраняем как бы индекс координаты dx, потом через смещение сможем получить dy
                         // Все потому, что вектор неизвестных выглядит примерно так: [dx1, dx2, dy1, dy2, lambda]
-
                         // dx
-                        globalDeltaX.push(0.001)
-                        point.globalId = globalDeltaX.length - 1;
+                        globalDeltaX.push(this.INITIAL_VALUE)
 
                         // Здесь можем просто положить для dy; хотя по сути в векторе неизвестных это будет не dy,
                         // в конце концов получим нужное количество неизвестных
                         // dy
-                        globalDeltaX.push(0.001)
+                        globalDeltaX.push(this.INITIAL_VALUE)
                     }
 
                     // Записываем локальное смещение для получения второй координаты
@@ -86,8 +92,8 @@ export default class Solver {
             });
 
             // Для каждой лямбды текущего ограничения добавляем ее в глобальный вектор неизвестных
-            for (let i = 0; i < constraint.lambdasIdx.length; i++) {
-                globalDeltaX.push(0.001);
+            for (let i = 0; i < this._mapLambdasSize(constraint.type); i++) {
+                globalDeltaX.push(this.INITIAL_VALUE);
                 constraint.lambdasIdx[i] = globalDeltaX.length - 1;
             }
         });
@@ -99,8 +105,12 @@ export default class Solver {
     }
 
     _ensemble(constraints, globalDeltaX) {
-        let globalJacobian = math.zeros(globalDeltaX.length, globalDeltaX.length);
-        let globalF = new Array(globalDeltaX.length);
+        let globalJacobian = new Array(globalDeltaX.length);
+        for (let i = 0; i < globalDeltaX.length; i++) {
+            globalJacobian[i] = new Array(globalDeltaX.length).fill(0.0);
+        }
+
+        let globalF = new Array(globalDeltaX.length).fill(0.0);
 
         constraints.forEach(constraint => {
             let localJacobian = jacobiansMap.getJacobian(constraint, globalDeltaX, constraint.params);
@@ -110,42 +120,79 @@ export default class Solver {
             // По сути берем каждую строку с координатами
             let localRow = 0;
             let localCol = 0;
+            let idxArray = [];
+            let pointOuterLength = 0;
             constraint.elements.forEach(primitiveOuter => {
                 primitiveOuter.getPoints().forEach(pointOuter => {
+                    if (pointOuterLength === 0) {
+                        pointOuterLength = pointOuter.localOffset;
+                    }
+
+                    // Вектор глобальных индексов для всех deltap_i
+                    idxArray.push(pointOuter.globalId);
+
                     // И для каждого столбца
                     constraint.elements.forEach(primitive => {
                         primitive.getPoints().forEach(point => {
+                            // Записываем индекс для deltax_i
+
+                            // [dx][dx]
                             globalJacobian[pointOuter.globalId][point.globalId] += localJacobian[localRow][localCol];
-                            globalJacobian[pointOuter.globalId][point.globalId + point.localOffset] += localJacobian[localRow][localCol + point.localOffset];
+
+                            // [dy][dx]
+                            globalJacobian[pointOuter.globalId + pointOuter.localOffset][point.globalId] +=
+                                localJacobian[localRow + point.localOffset][localCol];
+
+                            // [dx][dy]
+                            globalJacobian[pointOuter.globalId][point.globalId + point.localOffset] +=
+                                localJacobian[localRow][localCol + point.localOffset];
+
+                            // [dy][dy]
+                            globalJacobian[pointOuter.globalId + pointOuter.localOffset][point.globalId + point.localOffset] +=
+                                localJacobian[localRow + point.localOffset][localCol + point.localOffset];
+
                             localCol++;
                         });
                     });
 
-                    constraint.elements.forEach(primitive => {
-                        primitive.getPoints().forEach(point => {
-                            globalJacobian[pointOuter.globalId + point.localOffset][point.globalId] += localJacobian[localRow + point.localOffset][localCol];
-                            globalJacobian[pointOuter.globalId + point.localOffset][point.globalId + point.localOffset] += localJacobian[localRow + point.localOffset][localCol + point.localOffset];
-                            localCol++;
-                        });
-                    });
+                    // dx
+                    globalF[pointOuter.globalId] += localF[localRow];
 
-                    globalF[pointOuter.globalId ] += localF[localRow];
+                    // dy
                     globalF[pointOuter.globalId + pointOuter.localOffset] += localF[localRow + pointOuter.localOffset];
                     localRow++;
                 });
+                localCol = 0;
             });
 
+            // Получили вектор индексов: [deltax_i, deltay_i]
+            let initialLength = idxArray.length;
+            for (let i = 0; i < initialLength; i++) {
+                idxArray.push(idxArray[i] + pointOuterLength);
+            }
+
+            // Точки всегда идут парами, поэтому первый индекс для лямбды просто в два раза больше, чем число точек
+            localRow *= 2;
+
             // Обрабатываем части, связанные с лямбдами
-            localRow = 0;
-            localCol = 0;
             constraint.lambdasIdx.forEach(lambdaIdxOuter => {
-                constraint.lambdasIdx.forEach(lambdaIdx => {
-                   globalJacobian[lambdaIdxOuter][lambdaIdx] += localJacobian[localRow][localCol];
+                // Обрабатываем часть с deltap_i
+                idxArray.forEach(idx => {
+                   globalJacobian[lambdaIdxOuter][idx] += localJacobian[localRow][localCol];
+                   globalJacobian[idx][lambdaIdxOuter] += localJacobian[localCol][localRow];
                    localCol++;
                 });
 
-                globalF[lambdaIdxOuter] += localF[lambdaIdxOuter];
+                // Обрабатываем лямбды
+                constraint.lambdasIdx.forEach(lambdaIdx => {
+                   globalJacobian[lambdaIdxOuter][lambdaIdx] += localJacobian[localRow][localCol];
+                   globalJacobian[lambdaIdx][lambdaIdxOuter] += localJacobian[localCol][localRow];
+                   localCol++;
+                });
+
+                globalF[lambdaIdxOuter] += localF[localRow];
                 localRow++;
+                localCol = 0;
             });
         });
 
@@ -156,10 +203,47 @@ export default class Solver {
     }
 
     _solveWithGauss(globalJacobian, globalF) {
-        let A = math.clone(globalJacobian);
-        let b = math.clone(globalF);
+        let A = [...globalJacobian];
+        let b = [...globalF];
 
         return this.gaussSolver.solve(A, b);
+    }
+
+    _mapLambdasSize(constraintType) {
+        switch (constraintType) {
+            case Constraint.constraintMap.joint: {
+                return 2;
+            }
+            case Constraint.constraintMap.distance: {
+                return 1;
+            }
+            case Constraint.constraintMap.parallelism: {
+                return 1;
+            }
+            case Constraint.constraintMap.perpendicularity: {
+                return 1;
+            }
+            case Constraint.constraintMap.verticality: {
+                return 1;
+            }
+            case Constraint.constraintMap.horizontality: {
+                return 1;
+            }
+            case Constraint.constraintMap.angle: {
+                return 1;
+            }
+            case Constraint.constraintMap.pointToLine: {
+                return 1;
+            }
+            case Constraint.constraintMap.fixation: {
+                return 2;
+            }
+            default: {
+                console.error("Unknown type of constraint: ", constraint.type);
+                console.trace();
+            }
+        }
+        return 0;
     }
 
 }
