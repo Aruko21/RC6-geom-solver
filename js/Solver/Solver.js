@@ -15,7 +15,7 @@ export default class Solver {
         this.INITIAL_VALUE = 1e-6;
         this.gaussSolver = new GaussSolver();
 
-        GaussianElimination.defaultOptions.pivoting = 'complete';
+        GaussianElimination.defaultOptions.pivoting = 'partial';
         this.gaussianElimination = new GaussianElimination();
     }
 
@@ -176,6 +176,7 @@ export default class Solver {
                             localCol += 2;
                         });
                     });
+                    localCol = 0;
 
                     // dx
                     globalF[pointOuter.globalId] += localF[localRow];

@@ -201,7 +201,7 @@ class JacobiansMap {
                     [-2 * deltaX[8] * b * d,
                         2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - d ** 2),
                         2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * (d ** 2 - (b ** 2 + d ** 2) * cos(param[9]) ** 2),
+                        2 * deltaX[8] * (d ** 2 - (b ** 2 + d ** 2) * cos(params.angle) ** 2),
                         2 * deltaX[8] * (2 * c * b * cos(params.angle) ** 2 - a * d),
                         2 * deltaX[8] * (2 * c * d * cos(params.angle) ** 2 - a * b - 2 * c * d),
                         2 * deltaX[8] * (a * d - 2 * c * d * cos(params.angle) ** 2),
@@ -433,7 +433,7 @@ class JacobiansMap {
                 const b = constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4];
                 const c = constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[1];
                 const d = constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[5];
-                j = [deltaX[0] + 2*deltaX[8] * (a * (b**2 + d**2) * cos(params.angle)**2 - b * (a*b + c*d)),    //  dF/dx1
+                f = [deltaX[0] + 2*deltaX[8] * (a * (b**2 + d**2) * cos(params.angle)**2 - b * (a*b + c*d)),    //  dF/dx1
                     deltaX[1] + 2*deltaX[8] * (c * (b**2 + d**2) * cos(params.angle)**2 - d * (a*b + c*d)),     //  dF/dy1
                     deltaX[2] + 2*deltaX[8] * (b * (a*b + c*d) - a * (b**2 + d**2) * cos(params.angle)**2),     //  dF/dx2
                     deltaX[3] + 2*deltaX[8] * (d * (a*b + c*d) - c * (b**2 + d**2) * cos(params.angle)**2),     //  dF/dy2
