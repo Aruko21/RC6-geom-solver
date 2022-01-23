@@ -14,8 +14,8 @@ class JacobiansMap {
             case Constraint.constraintMap.joint: {
                 /*  deltaX: [0] - dx1,          constraint.elements:    [0] - point1,
                             [1] - dy1,                                  [1] - point2
-                            [2] - dx2, 
-                            [3] - dy2, 
+                            [2] - dx2,
+                            [3] - dy2,
                             [4] - lambda1
                             [5] - lambda2
                 */
@@ -90,14 +90,14 @@ class JacobiansMap {
             }
             case Constraint.constraintMap.perpendicularity: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
-                            [1] - dy1                                   [1] - line2 (x3, x4, y3, y4) 
+                            [1] - dy1                                   [1] - line2 (x3, x4, y3, y4)
                             [2] - dx2
                             [3] - dy2
                             [4] - dx3
                             [5] - dy3
                             [6] - dx4
                             [7] - dy4
-                            [8] - lambda 
+                            [8] - lambda
                 */
                 j = [[1, 0, 0, 0, deltaX[8], 0, -deltaX[8], 0,
                     constraint.elements[1].beginPoint.point.x + deltaX[4] - constraint.elements[1].endPoint.point.x - deltaX[6]],  //dx1
@@ -128,10 +128,10 @@ class JacobiansMap {
             }
             case Constraint.constraintMap.verticality: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
-                            [1] - dy1 
-                            [2] - dx2 
-                            [3] - dy2, 
-                            [4] - lambda, 
+                            [1] - dy1
+                            [2] - dx2
+                            [3] - dy2,
+                            [4] - lambda,
                 */
                 j = [[1, 0, 0, 0, -1],   //dx1
                     [0, 1, 0, 0, 0],    //dy1
@@ -144,9 +144,9 @@ class JacobiansMap {
             case Constraint.constraintMap.horizontality: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
                             [1] - dy1
-                            [2] - dx2 
-                            [3] - dy2, 
-                            [4] - lambda, 
+                            [2] - dx2
+                            [3] - dy2,
+                            [4] - lambda,
                 */
                 j = [[1, 0, 0, 0, 0],    //dx1
                     [0, 1, 0, 0, -1],    //dy1
@@ -259,8 +259,8 @@ class JacobiansMap {
                 /*  deltaX: [0] - dx1,          constraint.elements:    [0] - point (x2, y2)
                             [1] - dy1,                                  [1] - line (x1, x3, y1, y3)
                             [2] - dx2
-                            [3] - dy2,  
-                            [4] - dx3, 
+                            [3] - dy2,
+                            [4] - dx3,
                             [5] - dy3, 
                             [6] - lambda, 
                 */
@@ -287,7 +287,7 @@ class JacobiansMap {
             }
             case Constraint.constraintMap.fixation: {
                 /*  deltaX: [0] - dx1,          constraint.elements:    [0] - point1
-                            [1] - dy1, 
+                            [1] - dy1,
                             [2] - lambda1,
                             [3] - lambda2,
                 */
@@ -368,14 +368,14 @@ class JacobiansMap {
             }
             case Constraint.constraintMap.perpendicularity: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
-                            [1] - dy1                                   [1] - line2 (x3, x4, y3, y4) 
+                            [1] - dy1                                   [1] - line2 (x3, x4, y3, y4)
                             [2] - dx2
                             [3] - dy2
                             [4] - dx3
                             [5] - dy3
                             [6] - dx4
                             [7] - dy4
-                            [8] - lambda 
+                            [8] - lambda
                 */
                 f = [deltaX[0] + deltaX[8] * (constraint.elements[1].beginPoint.point.x + deltaX[4] - constraint.elements[1].endPoint.point.x - deltaX[6]),  //  dF/dx1
                     deltaX[1] + deltaX[8] * (constraint.elements[1].beginPoint.point.y + deltaX[5] - constraint.elements[1].endPoint.point.y - deltaX[7]),  //  dF/dy1
@@ -393,8 +393,8 @@ class JacobiansMap {
             }
             case Constraint.constraintMap.verticality: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
-                            [1] - dy1 
-                            [2] - dx2 
+                            [1] - dy1
+                            [2] - dx2
                             [3] - dy2, 
                             [4] - lambda, 
                 */
@@ -408,7 +408,7 @@ class JacobiansMap {
             case Constraint.constraintMap.horizontality: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - line1 (x1, x2, y1, y2)
                             [1] - dy1
-                            [2] - dx2 
+                            [2] - dx2
                             [3] - dy2, 
                             [4] - lambda, 
                 */
@@ -434,7 +434,7 @@ class JacobiansMap {
                 const b = constraint.elements[1].endPoint.point.x + deltaX[3] - constraint.elements[1].beginPoint.point.x - deltaX[2];
                 const c = constraint.elements[0].endPoint.point.y + deltaX[5] - constraint.elements[0].beginPoint.point.y - deltaX[4];
                 const d = constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[6];
-                j = [deltaX[0] + 2*deltaX[8] * (a * (b**2 + d**2) * cos(params.angle)**2 - b * (a*b + c*d)),    //  dF/dx1
+                f = [deltaX[0] + 2*deltaX[8] * (a * (b**2 + d**2) * cos(params.angle)**2 - b * (a*b + c*d)),    //  dF/dx1
                     deltaX[1] + 2*deltaX[8] * (b * (a*b + c*d) - a * (b**2 + d**2) * cos(params.angle)**2),     //  dF/dx2
                     deltaX[2] + 2*deltaX[8] * (b * (a**2 + c**2) * cos(params.angle)**2 - a * (a*b + c*d)),     //  dF/dx3
                     deltaX[3] + 2*deltaX[8] * (a * (a*b + c*d) - b * (a**2 + c**2) * cos(params.angle)**2),     //  dF/dx4
@@ -448,8 +448,8 @@ class JacobiansMap {
             case Constraint.constraintMap.pointToLine: {
                 /*  deltaX: [0] - dx1           constraint.elements:    [0] - point (x2, y2)
                             [1] - dy1                                   [1] - line (x1, y1, x3, y3)
-                            [2] - dx2 
-                            [3] - dy2, 
+                            [2] - dx2
+                            [3] - dy2,
                             [4] - dx3,
                             [5] - dy3,
                             [6] - lambda 

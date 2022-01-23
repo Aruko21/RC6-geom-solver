@@ -3,14 +3,19 @@ import GaussSolver from "./GaussSolver";
 import { create, all } from 'mathjs'
 import Constraint from "./Constraint";
 
+// import GaussianElimination from 'na-gaussian-elimination';
+// import BigNumber from "bignumber.js";
+
 const math = create(all)
 
 export default class Solver {
     constructor() {
         this.EPS = 1e-6;
         this.MAX_ITERATIONS_NUM = 1e2;
-        this.INITIAL_VALUE = 1e-3;
+        this.INITIAL_VALUE = 1e-6;
         this.gaussSolver = new GaussSolver();
+
+        this.gaussianElimination = new GaussianElimination();
     }
 
     solve(constraints) {
@@ -72,13 +77,13 @@ export default class Solver {
                     } else {
                         // Не нашли индекс, добавляем уникальную точку в общий список, обновляя индекс точки (ниже)
                         globalPointsList.push(point);
-                        point.globalId = globalPointsList.length - 1;
 
                         // Также ниже добавляем новую точку в глобальный список неизвестных
                         // По сути сохраняем как бы индекс координаты dx, потом через смещение сможем получить dy
                         // Все потому, что вектор неизвестных выглядит примерно так: [dx1, dx2, dy1, dy2, lambda]
                         // dx
                         globalDeltaX.push(this.INITIAL_VALUE)
+                        point.globalId = globalDeltaX.length - 1;
 
                         // Здесь можем просто положить для dy; хотя по сути в векторе неизвестных это будет не dy,
                         // в конце концов получим нужное количество неизвестных
@@ -202,12 +207,12 @@ export default class Solver {
         };
     }
 
-    _solveWithGauss(globalJacobian, globalF) {
-        let A = [...globalJacobian];
-        let b = [...globalF];
-
-        return this.gaussSolver.solve(A, b);
-    }
+    // _solveWithGauss(globalJacobian, globalF) {
+    //     let A = globalJacobian.map(row => row.map(val => new BigNumber(val)));
+    //     let b = globalF.map(val => new BigNumber(val));
+    //
+    //     return this.gaussianElimination.solve(A, b).solution.map(val => val.toNumber());
+    // }
 
     _mapLambdasSize(constraintType) {
         switch (constraintType) {
