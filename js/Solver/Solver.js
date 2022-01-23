@@ -10,11 +10,12 @@ const math = create(all)
 
 export default class Solver {
     constructor() {
-        this.EPS = 1e-6;
+        this.EPS = 1e-9;
         this.MAX_ITERATIONS_NUM = 1e2;
         this.INITIAL_VALUE = 1e-6;
         this.gaussSolver = new GaussSolver();
 
+        GaussianElimination.defaultOptions.pivoting = 'complete';
         this.gaussianElimination = new GaussianElimination();
     }
 
@@ -25,7 +26,13 @@ export default class Solver {
 
         // Основной цикл
         let currentIterNum = 0;
-        let curX = [...globalDeltaX];
+        // let curX = [...globalDeltaX];
+
+        let curX = [];
+        for (let i = 0; i < globalDeltaX.length; i++) {
+            curX.push(globalDeltaX[i]);
+        }
+
         let curAim = 0;
         while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce(
             (res, current) => {
@@ -36,14 +43,25 @@ export default class Solver {
             // Ансамблирование по сопрягающимся точкам
             let { globalJacobian, globalF } = this._ensemble(constraints, curX, globalPointsList);
 
-            globalDeltaX = this.gaussSolver.solve(globalJacobian, globalF.map(element => -element));
-            // globalDeltaX = this._solveWithGauss(globalJacobian, globalF.map((element) => -element));
+            // MAIN
+            // globalDeltaX = this._solveWithGaussCustom(globalJacobian, globalF.map(element => -element));
+            globalDeltaX = this._solveWithGauss(globalJacobian, globalF.map((element) => -element));
 
             // Осуществляем шаг: X^r+1 = X^r + deltaX
             curX = math.add(curX, globalDeltaX);
 
+
+            // ALTERNATIVE
+            // let r = math.matrix(curX);
+            // let J = math.matrix(globalJacobian);
+            // let f = math.matrix(globalF);
+            //
+            // let inversedJ = math.inv(J);
+            // let accum = math.multiply(inversedJ, f);
+            // curX = math.subtract(r, accum)._data;
+
             curAim = this._getAimFunction(curX, globalF, constraints);
-            console.log(curAim);
+            console.log("current aim function value: " + curAim);
 
             currentIterNum++;
         }
@@ -54,6 +72,16 @@ export default class Solver {
                 x: curX[point.globalId],
                 y: curX[point.globalId + 1]
             });
+        });
+
+        constraints.forEach(constraint => {
+           constraint.lambdasIdx = [];
+           constraint.elements.forEach(primitive => {
+              primitive.getPoints().forEach(point => {
+                  // Очищаем точки
+                  point.globalId = null;
+              });
+           });
         });
     }
 
@@ -121,9 +149,9 @@ export default class Solver {
             let idxArray = [];
             let pointsCount = 0;
             constraint.elements.forEach(primitiveOuter => {
-                pointsCount++;
-
                 primitiveOuter.getPoints().forEach(pointOuter => {
+                    pointsCount++;
+
                     // Вектор глобальных индексов для всех deltap_i
                     idxArray.push(pointOuter.globalId);
                     idxArray.push(pointOuter.globalId + 1);
@@ -196,6 +224,13 @@ export default class Solver {
         let b = globalF.map(val => new BigNumber(val));
 
         return this.gaussianElimination.solve(A, b).solution.map(val => val.toNumber());
+    }
+
+    _solveWithGaussCustom(globalJacobian, globalF) {
+        let A = [...globalJacobian];
+        let b = [...globalF];
+
+        return this.gaussSolver.solve(A, b);
     }
 
     _mapLambdasSize(constraintType) {
