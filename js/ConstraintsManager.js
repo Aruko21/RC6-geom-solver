@@ -142,8 +142,8 @@ export default class ConstraintsManager {
             console.log("add first element for constraint");
             this.tmpElements.push(constraintItem);
         } else if (this.tmpElements.length === 1) {
-            if ((this.tmpElements[0] instanceof Line && constraintType instanceof PointDot) ||
-                (this.tmpElements[0] instanceof PointDot && constraintType instanceof Line)) {
+            if ((this.tmpElements[0] instanceof Line && constraintItem instanceof PointDot) ||
+                (this.tmpElements[0] instanceof PointDot && constraintItem instanceof Line)) {
                 console.log("add second element for constraint");
                 this.tmpElements.push(constraintItem);
                 return true;
