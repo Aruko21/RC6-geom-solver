@@ -10,9 +10,9 @@ const math = create(all)
 
 export default class Solver {
     constructor() {
-        this.EPS = 1e-9;
+        this.EPS = 1e-6;
         this.MAX_ITERATIONS_NUM = 1e2;
-        this.INITIAL_VALUE = 1e-6;
+        this.INITIAL_VALUE = 1e-5;
         this.gaussSolver = new GaussSolver();
 
         GaussianElimination.defaultOptions.pivoting = 'partial';
@@ -26,12 +26,7 @@ export default class Solver {
 
         // Основной цикл
         let currentIterNum = 0;
-        // let curX = [...globalDeltaX];
-
-        let curX = [];
-        for (let i = 0; i < globalDeltaX.length; i++) {
-            curX.push(globalDeltaX[i]);
-        }
+        let curX = [...globalDeltaX];
 
         let curAim = 0;
         while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce(
@@ -49,7 +44,6 @@ export default class Solver {
 
             // Осуществляем шаг: X^r+1 = X^r + deltaX
             curX = math.add(curX, globalDeltaX);
-
 
             // ALTERNATIVE
             // let r = math.matrix(curX);
@@ -104,22 +98,22 @@ export default class Solver {
 
                         // Также ниже добавляем новую точку в глобальный список неизвестных
                         // По сути сохраняем как бы индекс координаты dx, потом через смещение сможем получить dy
-                        // Все потому, что вектор неизвестных выглядит примерно так: [dx1, dx2, dy1, dy2, lambda]
+                        // Все потому, что вектор неизвестных выглядит примерно так: [dx1, dy1, dx2, dy2, lambda]
                         // dx
-                        globalDeltaX.push(this.INITIAL_VALUE);
+                        globalDeltaX.push(math.random(this.INITIAL_VALUE));
                         point.globalId = globalDeltaX.length - 1;
 
                         // Здесь можем просто положить для dy; хотя по сути в векторе неизвестных это будет не dy,
                         // в конце концов получим нужное количество неизвестных
                         // dy
-                        globalDeltaX.push(this.INITIAL_VALUE);
+                        globalDeltaX.push(math.random(this.INITIAL_VALUE));
                     }
                 });
             });
 
             // Для каждой лямбды текущего ограничения добавляем ее в глобальный вектор неизвестных
             for (let i = 0; i < this._mapLambdasSize(constraint.type); i++) {
-                globalDeltaX.push(this.INITIAL_VALUE);
+                globalDeltaX.push(math.random(this.INITIAL_VALUE));
                 constraint.lambdasIdx[i] = globalDeltaX.length - 1;
             }
         });
@@ -186,7 +180,6 @@ export default class Solver {
 
                     localRow += 2;
                 });
-                localCol = 0;
             });
 
             // Точки всегда идут парами, поэтому первый индекс для лямбды просто в два раза больше, чем число точек
@@ -264,7 +257,7 @@ export default class Solver {
                 return 2;
             }
             default: {
-                console.error("Unknown type of constraint: ", constraint.type);
+                console.error("Unknown type of constraint: ", constraintType);
                 console.trace();
             }
         }
@@ -282,7 +275,7 @@ export default class Solver {
             });
 
             constraint.lambdasIdx.forEach(idx => {
-               sum2 += globalF[idx];
+               sum2 += curX[idx] * globalF[idx];
             });
         });
 
