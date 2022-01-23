@@ -12,6 +12,7 @@ export default class PointDot extends Primitive {
 
         this.point = new this.uicore.Point(point);
         this.pointView = new this.uicore.Path.Circle(this.point, PointDot.dotRadius);
+        // Перепривязывание точки, т.к. paper в Path.Circle создает копию точки
         this.point = this.pointView.position;
 
         this.pointView.style = {
@@ -21,6 +22,7 @@ export default class PointDot extends Primitive {
         };
 
         this.globalId = null;
+        this.moveCallback = null;
 
         this.init();
     }
@@ -46,15 +48,18 @@ export default class PointDot extends Primitive {
                 && (Math.abs(deltaX) <= 50 || Math.abs(deltaY) <= 50))
             {
                 this.moveDelta(new this.uicore.Point(deltaX, deltaY));
+                this.eventScope.dispatchEvent(new CustomEvent("needSolve"));
             } else if (Math.abs(deltaX) >= 50 || Math.abs(deltaY) >= 50) {
                 console.log("delta is more than 50");
             }
         }
         this.pointView.onMouseMove = () => {
             this.pointView.style.strokeColor = "#1E90FF";
+            this.pointView.style.fillColor = "#1E90FF";
         }
         this.pointView.onMouseLeave = () => {
             this.pointView.style.strokeColor = "black";
+            this.pointView.style.fillColor = "black";
         }
     }
 
@@ -64,6 +69,9 @@ export default class PointDot extends Primitive {
         // this.pointView.position = this.pointView.position.add(delta);
         // this.point = this.pointView.position;
         console.log("check point view: ", this.pointView);
+        if (this.moveCallback) {
+            this.moveCallback(this.point);
+        }
     }
 
     getPoints() {
