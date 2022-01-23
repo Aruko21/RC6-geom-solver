@@ -159,7 +159,8 @@ export default class ConstraintsManager {
         console.log("check constraints: ", this.tmpElements);
         this.callback(new Constraint({
             elements: [...this.tmpElements],
-            type: type
+            type: type,
+            params: this.params
         }));
         this.tmpElements = [];
     }

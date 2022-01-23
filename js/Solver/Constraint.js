@@ -15,7 +15,8 @@ export default class Constraint {
 
     constructor({
         elements,
-        type
+        type,
+        params
     }) {
         // список элементов, участвующих в ограничении (точки и линии)
         this.elements = elements;
@@ -24,10 +25,7 @@ export default class Constraint {
         this.lambdasIdx = [];
         
         this.type = type;
-        this.params = {
-            distance: null,
-            angle: null
-        };
+        this.params = params;
         // params.distance = что-то
         // params.angle = угол
     }
