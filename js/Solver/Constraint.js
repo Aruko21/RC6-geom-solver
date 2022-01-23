@@ -3,7 +3,7 @@ import jacobiansMap from "./JacobiansMap";
 export default class Constraint {
     static constraintMap = {
         joint: "joint",
-        distance: "line",
+        distance: "distance",
         parallelism: "parallelism",
         perpendicularity: "perpendicularity",
         verticality: "verticality",
