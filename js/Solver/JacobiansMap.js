@@ -100,9 +100,9 @@ class JacobiansMap {
                             [8] - lambda 
                 */
                 j = [[1, 0, 0, 0, deltaX[8], 0, -deltaX[8], 0,
-                    constraint.elements[1].beginPoint.point.x + deltaX[4] - constraint.elements[1].endPoint.point.x - deltaX[6]],  //dx1
+                        constraint.elements[1].beginPoint.point.x + deltaX[4] - constraint.elements[1].endPoint.point.x - deltaX[6]],  //dx1
                     [0, 1, 0, 0, 0, deltaX[8], 0, -deltaX[8],
-                        constraint.elements[1].beginPoint.point.y + deltaX[4] - constraint.elements[1].endPoint.point.y - deltaX[7]],  //dy1
+                        constraint.elements[1].beginPoint.point.y + deltaX[5] - constraint.elements[1].endPoint.point.y - deltaX[7]],  //dy1
                     [0, 0, 1, 0, -deltaX[8], 0, deltaX[8], 0,
                         constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4]],  //dx2
                     [0, 0, 0, 1, 0, -deltaX[8], 0, deltaX[8],
@@ -116,7 +116,7 @@ class JacobiansMap {
                     [0, -deltaX[8], 0, deltaX[8], 0, 0, 0, 1,
                         constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[1]],  //dy4
                     [constraint.elements[1].beginPoint.point.x + deltaX[4] - constraint.elements[1].endPoint.point.x - deltaX[6],
-                        constraint.elements[1].beginPoint.point.y + deltaX[4] - constraint.elements[1].endPoint.point.y - deltaX[7],
+                        constraint.elements[1].beginPoint.point.y + deltaX[5] - constraint.elements[1].endPoint.point.y - deltaX[7],
                         constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4],
                         constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[5],
                         constraint.elements[0].beginPoint.point.x + deltaX[0] - constraint.elements[0].endPoint.point.x - deltaX[2],
@@ -385,7 +385,7 @@ class JacobiansMap {
                     deltaX[6] + deltaX[8] * (constraint.elements[0].endPoint.point.x + deltaX[2] - constraint.elements[0].beginPoint.point.x - deltaX[0]),  //  dF/dx4
                     deltaX[7] + deltaX[8] * (constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[1]),  //  dF/dy4
                     (constraint.elements[0].endPoint.point.x + deltaX[2] - constraint.elements[0].beginPoint.point.x - deltaX[0]) *
-                    (constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4]) -
+                    (constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4]) +
                     (constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[1]) *
                     (constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[5]) ];        //  dF/dlambda
                 break;
