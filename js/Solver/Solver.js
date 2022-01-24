@@ -21,20 +21,20 @@ export default class Solver {
 
     solve(constraints) {
         // Создать глобальный вектор неизвестных 
-        // Сначала лямбды, затем изменения координат, и так для каждого ограничения: [dx_i, dy_i, lambda_i]
+        // Сначала затем изменения координат (x и y), затем лямбды и так для каждого ограничения: [dx_i, dy_i, lambda_i]
         let { globalDeltaX, globalPointsList } = this._parseConstraints(constraints);
 
         // Основной цикл
-        let currentIterNum = 0;
         let curX = [...globalDeltaX];
-
         let curAim = 0;
-        while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce(
-            (res, current) => {
-                return !!(res && current);
-            })
+        let currentIterNum = 0;
+        // Первое условие остановки цикла - проверяем, что каждый элемент globalDeltaX < EPS
+        // math.smaller() - вернет список из boolean, с помощью reduce проходимся по нему
+        // res - по сути сохраняет предыдущий элемент; если там было true (globalDeltaX[i] < EPS), и текущий true,
+        // то выражение вернет true, иначе в res останется false,
+        // а итерироваться надо, пока !(globalDeltaX < EPS)
+        while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce((res, current) => res && current)
                 && currentIterNum < this.MAX_ITERATIONS_NUM) {
-
             // Ансамблирование по сопрягающимся точкам
             let { globalJacobian, globalF } = this._ensemble(constraints, curX, globalPointsList);
 
@@ -67,16 +67,6 @@ export default class Solver {
                 y: curX[point.globalId + 1]
             });
         });
-
-        constraints.forEach(constraint => {
-           constraint.lambdasIdx = [];
-           constraint.elements.forEach(primitive => {
-              primitive.getPoints().forEach(point => {
-                  // Очищаем точки
-                  point.globalId = null;
-              });
-           });
-        });
     }
 
     _parseConstraints(constraints) {
@@ -97,21 +87,22 @@ export default class Solver {
                         globalPointsList.push(point);
 
                         // Также ниже добавляем новую точку в глобальный список неизвестных
-                        // По сути сохраняем как бы индекс координаты dx, потом через смещение сможем получить dy
+                        // По сути сохраняем как бы индекс координаты dx, потом через смещение на +1 сможем получить dy
                         // Все потому, что вектор неизвестных выглядит примерно так: [dx1, dy1, dx2, dy2, lambda]
                         // dx
+                        // globalDeltaX.push(this.INITIAL_VALUE);
                         globalDeltaX.push(math.random(this.INITIAL_VALUE));
                         point.globalId = globalDeltaX.length - 1;
 
-                        // Здесь можем просто положить для dy; хотя по сути в векторе неизвестных это будет не dy,
-                        // в конце концов получим нужное количество неизвестных
                         // dy
                         globalDeltaX.push(math.random(this.INITIAL_VALUE));
+                        // globalDeltaX.push(this.INITIAL_VALUE);
                     }
                 });
             });
 
             // Для каждой лямбды текущего ограничения добавляем ее в глобальный вектор неизвестных
+            // Также запоминаем глобальные индексы лямбд (у каждого ограничения обязательно есть свои лямбды)
             for (let i = 0; i < this._mapLambdasSize(constraint.type); i++) {
                 globalDeltaX.push(math.random(this.INITIAL_VALUE));
                 constraint.lambdasIdx[i] = globalDeltaX.length - 1;
@@ -124,17 +115,19 @@ export default class Solver {
         };
     }
 
-    _ensemble(constraints, globalDeltaX) {
-        let globalJacobian = new Array(globalDeltaX.length);
-        for (let i = 0; i < globalDeltaX.length; i++) {
-            globalJacobian[i] = new Array(globalDeltaX.length).fill(0.0);
+    _ensemble(constraints, curX) {
+        let globalJacobian = new Array(curX.length);
+        for (let i = 0; i < curX.length; i++) {
+            globalJacobian[i] = new Array(curX.length).fill(0.0);
         }
 
-        let globalF = new Array(globalDeltaX.length).fill(0.0);
+        let globalF = new Array(curX.length).fill(0.0);
 
+        // Проходимся по каждому ограничению
         constraints.forEach(constraint => {
-            let localJacobian = jacobiansMap.getJacobian(constraint, globalDeltaX, constraint.params);
-            let localF = jacobiansMap.getF(constraint, globalDeltaX, constraint.params);
+            // Для каждого ограничения получаем свой Якобиан и свой вектор из правой части
+            let localJacobian = jacobiansMap.getJacobian(constraint, curX, constraint.params);
+            let localF = jacobiansMap.getF(constraint, curX, constraint.params);
 
             // Обрабатываем часть, связанную с дельтами координат
             // По сути берем каждую строку с координатами
@@ -144,12 +137,14 @@ export default class Solver {
             let pointsCount = 0;
             constraint.elements.forEach(primitiveOuter => {
                 primitiveOuter.getPoints().forEach(pointOuter => {
+                    // Считаем количество точек для данного ограничения
                     pointsCount++;
 
-                    // Вектор глобальных индексов для всех deltap_i
+                    // Вектор глобальных индексов для всех delta_x_i, delta_y_i
                     idxArray.push(pointOuter.globalId);
                     idxArray.push(pointOuter.globalId + 1);
 
+                    // Внутренний цикл по столбцам для обработки Якобиана
                     constraint.elements.forEach(primitive => {
                         primitive.getPoints().forEach(point => {
                             // [dx][dx]
@@ -170,7 +165,6 @@ export default class Solver {
                             localCol += 2;
                         });
                     });
-                    localCol = 0;
 
                     // dx
                     globalF[pointOuter.globalId] += localF[localRow];
@@ -179,6 +173,7 @@ export default class Solver {
                     globalF[pointOuter.globalId + 1] += localF[localRow + 1];
 
                     localRow += 2;
+                    localCol = 0;
                 });
             });
 
@@ -187,21 +182,23 @@ export default class Solver {
 
             // Обрабатываем части, связанные с лямбдами
             constraint.lambdasIdx.forEach(lambdaIdxOuter => {
-                // Обрабатываем часть с deltap_i
+                // Обрабатываем часть с delta_x_i, delta_y_i
                 idxArray.forEach(idx => {
-                   globalJacobian[lambdaIdxOuter][idx] += localJacobian[localRow][localCol];
-                   globalJacobian[idx][lambdaIdxOuter] += localJacobian[localCol][localRow];
-                   localCol++;
+                    // Также заполняем еще симметричную часть
+                    globalJacobian[lambdaIdxOuter][idx] = localJacobian[localRow][localCol];
+                    globalJacobian[idx][lambdaIdxOuter] = localJacobian[localCol][localRow];
+                    localCol++;
                 });
 
                 // Обрабатываем лямбды
                 constraint.lambdasIdx.forEach(lambdaIdx => {
-                   globalJacobian[lambdaIdxOuter][lambdaIdx] += localJacobian[localRow][localCol];
-                   globalJacobian[lambdaIdx][lambdaIdxOuter] += localJacobian[localCol][localRow];
-                   localCol++;
+                    // Аналогично, заполняем вместе с симметричной частью
+                    globalJacobian[lambdaIdxOuter][lambdaIdx] = localJacobian[localRow][localCol];
+                    globalJacobian[lambdaIdx][lambdaIdxOuter] = localJacobian[localCol][localRow];
+                    localCol++;
                 });
 
-                globalF[lambdaIdxOuter] += localF[localRow];
+                globalF[lambdaIdxOuter] = localF[localRow];
                 localRow++;
                 localCol = 0;
             });
@@ -227,6 +224,7 @@ export default class Solver {
         return this.gaussSolver.solve(A, b);
     }
 
+    // Для получения числа лямбд в зависимости от типа ограничения
     _mapLambdasSize(constraintType) {
         switch (constraintType) {
             case Constraint.constraintMap.joint: {
