@@ -15,14 +15,20 @@ export default class Solver {
         this.INITIAL_VALUE = 1e-5;
         this.gaussSolver = new GaussSolver();
 
-        GaussianElimination.defaultOptions.pivoting = 'partial';
+        GaussianElimination.defaultOptions.pivoting = 'complete';
         this.gaussianElimination = new GaussianElimination();
     }
 
     solve(constraints) {
-        // Создать глобальный вектор неизвестных 
+        // Выделить ограничения, для которых нужно производить решение
+        // Причем фильтруем только, если ограничений больше одного
+        // let needSolvingConstraints = this._filterConstraints(constraints);
+
+        let needSolvingConstraints = [...constraints];
+
+        // Создать глобальный вектор неизвестных
         // Сначала затем изменения координат (x и y), затем лямбды и так для каждого ограничения: [dx_i, dy_i, lambda_i]
-        let { globalDeltaX, globalPointsList } = this._parseConstraints(constraints);
+        let { globalDeltaX, globalPointsList } = this._parseConstraints(needSolvingConstraints);
 
         // Основной цикл
         let curX = [...globalDeltaX];
@@ -36,7 +42,7 @@ export default class Solver {
         while (!math.smaller(math.abs(globalDeltaX), this.EPS).reduce((res, current) => res && current)
                 && currentIterNum < this.MAX_ITERATIONS_NUM) {
             // Ансамблирование по сопрягающимся точкам
-            let { globalJacobian, globalF } = this._ensemble(constraints, curX, globalPointsList);
+            let { globalJacobian, globalF } = this._ensemble(needSolvingConstraints, curX, globalPointsList);
 
             // MAIN
             // globalDeltaX = this._solveWithGaussCustom(globalJacobian, globalF.map(element => -element));
@@ -54,7 +60,7 @@ export default class Solver {
             // let accum = math.multiply(inversedJ, f);
             // curX = math.subtract(r, accum)._data;
 
-            curAim = this._getAimFunction(curX, globalF, constraints);
+            curAim = this._getAimFunction(curX, globalF, needSolvingConstraints);
             console.log("current aim function value: " + curAim);
 
             currentIterNum++;
@@ -67,6 +73,49 @@ export default class Solver {
                 y: curX[point.globalId + 1]
             });
         });
+
+        constraints.forEach(constraint => constraint.isNeedSolve = false);
+    }
+
+    _filterConstraints(constraints) {
+        let needSolvingConstraints = [];
+        let needSolvingPoints = [];
+
+
+
+        // Пока что считаем, что последнее ограничение либо новое, либо содержит объекты, изменяющие свое положение
+        let needSolvingConstraint = constraints[constraints.length - 1];
+        needSolvingConstraints.push(needSolvingConstraint);
+        needSolvingPoints.push([...needSolvingConstraint.getPoints()]);
+        for (let i = 0; i < constraints.length - 1; i++) {
+            constraints.forEach(constraint => {
+                this._checkPointsOfConstraintRecursive(constraint.getPoints(), constraint,
+                    needSolvingPoints, needSolvingConstraints)
+
+                // let points = constraint.getPoints();
+                // for (let j = 0; j < points.length; j++) {
+                //     if (points[j] in needSolvingPoints) {
+                //         needSolvingPoints.push([...points]);
+                //         needSolvingConstraints.push(constraint);
+                //         break;
+                //     }
+                // }
+            });
+        }
+
+        return needSolvingConstraints;
+    }
+
+    _checkPointsOfConstraintRecursive(points, constraint, needSolvingPoints, needSolvingConstraints) {
+        for (let j = 0; j < points.length; j++) {
+            if (points[j] in needSolvingPoints) {
+                needSolvingPoints.push([...points]);
+                needSolvingConstraints.push(constraint);
+                return this._checkPointsOfConstraintRecursive(points, constraint, needSolvingPoints, needSolvingConstraints);
+            }
+        }
+
+        return needSolvingPoints;
     }
 
     _parseConstraints(constraints) {

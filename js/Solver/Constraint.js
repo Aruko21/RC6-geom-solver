@@ -1,4 +1,5 @@
 import jacobiansMap from "./JacobiansMap";
+import {all} from "mathjs";
 
 export default class Constraint {
     static constraintMap = {
@@ -28,5 +29,13 @@ export default class Constraint {
         this.params = params;
         // params.distance = что-то
         // params.angle = угол
+
+        this.isNeedSolve = true;
+    }
+
+    getPoints() {
+        let allPoints = [];
+        this.elements.forEach(primitive => allPoints.push(primitive.getPoints()));
+        return allPoints;
     }
 }

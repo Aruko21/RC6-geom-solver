@@ -24,6 +24,15 @@ export default class GaussSolver {
 
         // Прямой ход с выбором главного элемента
         for (let i = 0; i < n; i++) {
+            // let forDet = [];
+            // for (let g = 0; g < n - 1; g++) {
+            //     forDet.push(new Array(n - 1));
+            //     for(let p = 0; p < n - 1; p++) {
+            //         forDet[g][p] = A[g][p];
+            //     }
+            // }
+            // console.log(math.det(forDet));
+
             // Поиск максимума по столбцу
             let maxEl = math.abs(A[i][i]);
             let maxRow = i;
