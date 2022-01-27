@@ -1,5 +1,5 @@
 import Constraint from "./Constraint";
-import matrices, {cos, create, all} from "mathjs";
+import matrices, {cos, create, all, cscDependencies} from "mathjs";
 
 const math = create(all)
 
@@ -171,86 +171,87 @@ class JacobiansMap {
                 const b = constraint.elements[1].endPoint.point.x + deltaX[6] - constraint.elements[1].beginPoint.point.x - deltaX[4];
                 const c = constraint.elements[0].endPoint.point.y + deltaX[3] - constraint.elements[0].beginPoint.point.y - deltaX[1];
                 const d = constraint.elements[1].endPoint.point.y + deltaX[7] - constraint.elements[1].beginPoint.point.y - deltaX[5];
-                j = [[1 + 2 * deltaX[8] * (b - (b ** 2 + d ** 2) * (cos(params.angle) ** 2)),
-                        2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - b),
-                        -2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (b * c - 2 * a * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * a * b * cos(params.angle) ** 2 - 2 * a * b - c * d),
-                        2 * deltaX[8] * (2 * a * d * cos(params.angle) ** 2 - b * c),
-                        2 * (a * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - b * (a * b + c * d))],    //dx1
-                    [2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * (d ** 2 - (b ** 2 + d ** 2) * cos(params.angle) ** 2),
-                        -2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - d ** 2),
-                        2 * deltaX[8] * (a * d - 2 * b * c * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * c * d + a * b - 2 * c * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * b * c * cos(params.angle) ** 2 - a * d),
-                        2 * deltaX[8] * (2 * c * d * cos(params.angle) ** 2 - 2 * c * d - a * b),
-                        2 * (c * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - d * (a * b + c * d))],    //dy1
-                    [2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - b ** 2),
-                        -2 * deltaX[8] * b * d,
-                        1 + 2 * deltaX[8] * (b ** 2 - (b ** 2 + d ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * (2 * a * b * cos(params.angle) ** 2 - 2 * a * b - c * d),
-                        2 * deltaX[8] * (2 * a * d * cos(params.angle) ** 2 - b * c),
-                        2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (b * c - 2 * a * d * cos(params.angle) ** 2),
-                        2 * (b * (a * b + c * d) - a * (b ** 2 + d ** 2) * cos(params.angle) ** 2)],    //dx2
-                    [-2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * ((b ** 2 + d ** 2) * cos(params.angle) ** 2 - d ** 2),
-                        2 * deltaX[8] * b * d,
-                        2 * deltaX[8] * (d ** 2 - (b ** 2 + d ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * c * b * cos(params.angle) ** 2 - a * d),
-                        2 * deltaX[8] * (2 * c * d * cos(params.angle) ** 2 - a * b - 2 * c * d),
-                        2 * deltaX[8] * (a * d - 2 * c * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (a * b + 2 * c * d - 2 * c * d * cos(params.angle) ** 2),
-                        2 * (d * (a * b + c * d) - c * (b ** 2 + d ** 2) * cos(params.angle) ** 2)],    //dy2
-                    [2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (a * d - 2 * b * c * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * a * b * cos(params.angle) ** 2 - 2 * a * b - c * d),
-                        2 * deltaX[8] * (2 * b * c * cos(params.angle) ** 2 - a * d),
-                        1 + 2 * deltaX[8] * (a ** 2 - (a ** 2 + c ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * ((a ** 2 + c ** 2) * cos(params.angle) ** 2 - a ** 2),
-                        -2 * deltaX[8] * a * c,
-                        2 * (b * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - a * (a * b + c * d))],   //dx3
-                    [2 * deltaX[8] * (b * c - 2 * a * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (a * b + 2 * c * d - 2 * c * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * a * d * cos(params.angle) ** 2 - b * c),
-                        2 * deltaX[8] * (2 * c * d * cos(params.angle) ** 2 - a * b - 2 * c * d),
-                        2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * (c ** 2 - (a ** 2 + c ** 2) * cos(params.angle) ** 2),
-                        -2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * ((a ** 2 + c ** 2) * cos(params.angle) ** 2 - c ** 2),
-                        2 * (d * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - c * (a * b + c * d))],    //dy3
-                    [2 * deltaX[8] * (2 * a * b * cos(params.angle) - 2 * a * b - c * d),
-                        2 * deltaX[8] * (2 * b * c * cos(params.angle) ** 2 - a * d),
-                        2 * deltaX[8] * (2 * a * b + c * d - 2 * a * b * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (a * d - 2 * b * c * cos(params.angle) ** 2),
-                        2 * deltaX[8] * ((a ** 2 + c ** 2) * cos(params.angle) ** 2 - a ** 2),
-                        -2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * (a ** 2 - (a ** 2 + c ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * a * c,
-                        2 * (a * (a * b + c * d) - b * (a ** 2 + c ** 2) * cos(params.angle) ** 2)],    //dx4
-                    [2 * deltaX[8] * (2 * a * d * cos(params.angle) ** 2 - c * b),
-                        2 * deltaX[8] * (2 * c * d * cos(params.angle) ** 2 - 2 * c * d - a * b),
-                        2 * deltaX[8] * (c * b - 2 * a * d * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * c * d + a * b - 2 * c * d * cos(params.angle) ** 2),
-                        -2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * ((a ** 2 + c ** 2) * cos(params.angle) ** 2 - c ** 2),
-                        2 * deltaX[8] * a * c,
-                        2 * deltaX[8] * (c ** 2 - (a ** 2 + c ** 2) * cos(params.angle) ** 2),
-                        2 * (c * (a * b + c * d) - d * (a ** 2 + c ** 2) * cos(params.angle) ** 2)],    //dy4
-                    [2 * deltaX[8] * (2 * a * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - b),
-                        2 * deltaX[8] * (2 * c * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - d), ,
-                        2 * deltaX[8] * (b - 2 * a * (b ** 2 + d ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (d - 2 * c * (b ** 2 + d ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (2 * b * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - a),
-                        2 * deltaX[8] * (2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - c), ,
-                        2 * deltaX[8] * (a - 2 * b * (a ** 2 + c ** 2) * cos(params.angle) ** 2),
-                        2 * deltaX[8] * (c - 2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2), 0]    //lambda
+                j = [[1 + 2 * deltaX[8] * (b**2 - (b**2 + c**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * b*d,
+                        2 * deltaX[8] * ((b**2 + d**2) * cos(params.angle)**2 - b**2),
+                        2 * deltaX[8] * (-b*d),
+                        2 * deltaX[8] * ((2*a*b + c*d) - (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * (b*c - 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-2*a*b - c*d) + (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * ((-b*c) + 2*a*d * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * (-b) + a * (b**2 + d**2) * cos(params.angle)**2) ],  //dx1
+                    [2 * deltaX[8] * b*d,
+                        1 + 2 * deltaX[8] * (d**2 - (b**2 + d**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * (-b*d),
+                        2 * deltaX[8] * ((b**2 + d**2) * cos(params.angle)**2 - d**2),
+                        2 * deltaX[8] * (a*d - 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * (a*b + 2*c*d - 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*d) + 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*b - 2*c*d) + 2*c*d * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * (-d) + c * (b**2 + d**2) * cos(params.angle)**2) ],   //dy1   
+                    [2 * deltaX[8] * ((b**2 + d**2) * cos(params.angle)**2 - b**2),
+                        2 * deltaX[8] * (-b*d),
+                        1 + 2 * deltaX[8] * (b**2 - (b**2 + d**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * b*d,
+                        2 * deltaX[8] * ((-2*a*b - c*d) + (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * ((-b*c) + 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((2*a*b + c*d) - (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * (b*c - 2*a*d * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * b - a * (b**2 + d**2) * cos(params.angle)**2) ],     //dx2
+                    [2 * deltaX[8] * (-b*d),
+                        2 * deltaX[8] * ((b**2 + d**2) * cos(params.angle)**2 - d**2),
+                        2 * deltaX[8] * b*d,
+                        1 + 2 * deltaX[8] * (d**2 - (b**2 + d**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*d) + 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*b - 2*c*d) + 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * (a*d - 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * (a*b + 2*c*d - 2*c*d * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * d - c * (b**2 + d**2) * cos(params.angle)**2) ],     //dy2
+                    [2 * deltaX[8] * ((2*a*b + c*d) - (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * (a*d - 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-2*a*b - c*d) + (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * ((-a*d) + 2*b*c * cos(params.angle)**2),
+                        1 + 2 * deltaX[8] * (a**2 - (a**2 + c**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * a*c,
+                        2 * deltaX[8] * ((a**2 + c**2) * cos(params.angle)**2 - a**2),
+                        2 * deltaX[8] * (-a*c),
+                        2 * ((a*b + c*d) * (-a) + b * (a**2 + c**2) * cos(params.angle)**2) ],  //dx3
+                    [2 * deltaX[8] * (b*c - 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * (a*b + 2*c*d - 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-b*c) + 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*b - 2*c*d) + 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * a*c,
+                        1 + 2 * deltaX[8] * (c**2 - (a**2 + c**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * (-a*c),
+                        2 * deltaX[8] * ((a**2 + c**2) * cos(params.angle)**2 - c**2),
+                        2 * ((a*b + c*d) * (-c) + d * (a**2 + c**2) * cos(params.angle)**2) ],  //dy3
+                    [2 * deltaX[8] * ((-2*a*b - c*d) + (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * ((-a*d) + 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * ((2*a*b + c*d) - (2*a*b * cos(params.angle)**2)),
+                        2 * deltaX[8] * (a*d - 2*b*c * cos(params.angle)**2),
+                        2 * deltaX[8] * ((a**2 + c**2) * cos(params.angle)**2 - a**2),
+                        2 * deltaX[8] * (-a*c),
+                        1 + 2 * deltaX[8] * (a**2 - (a**2 + c**2) * cos(params.angle)**2),
+                        2 * deltaX[8] * a*c,
+                        2 * ((a*b + c*d) * a - b * (a**2 + c**2) * cos(params.angle)**2) ],     //dx4
+                    [2 * deltaX[8] * ((-b*c) + 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * ((-a*b - 2*c*d) + 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * (b*c - 2*a*d * cos(params.angle)**2),
+                        2 * deltaX[8] * (a*b + 2*c*d - 2*c*d * cos(params.angle)**2),
+                        2 * deltaX[8] * (-a*c),
+                        2 * deltaX[8] * ((a**2 + c**2) * cos(params.angle)**2 - c**2),
+                        2 * deltaX[8] * a*c,
+                        1 + 2 * deltaX[8] * (c**2 - (a**2 + c**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * c - d * (a**2 + c**2) * cos(params.angle)**2) ],     //dy4
+                    [2 * ((a*b + c*d) * (-b) + a * (b**2 + d**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * (-d) + c * (b**2 + d**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * b - a * (b**2 + d**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * d - c * (b**2 + d**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * (-a) + b * (a**2 + c**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * (-c) + d * (a**2 + c**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * a - b * (a**2 + c**2) * cos(params.angle)**2),
+                        2 * ((a*b + c*d) * c - d * (a**2 + c**2) * cos(params.angle)**2),       //dlambda
+                        0 ]
                 ];
                 break;
             }
@@ -264,11 +265,11 @@ class JacobiansMap {
                             [6] - lambda 
                 */
                 j = [[1, 0, 0, deltaX[6], 0, -deltaX[6],
-                    constraint.elements[0].point.y + deltaX[1] - constraint.elements[1].endPoint.point.y - deltaX[5]],      //dx1
+                        constraint.elements[0].point.y + deltaX[1] - constraint.elements[1].endPoint.point.y - deltaX[5]],      //dx1
                     [0, 1, deltaX[6], 0, -deltaX[6], 0,
                         constraint.elements[0].point.x + deltaX[0] - constraint.elements[1].endPoint.point.x - deltaX[4]],  //dy1
                     [0, deltaX[6], 1, -2*deltaX[6], 0, deltaX[6],
-                        constraint.elements[1].endPoint.point.y + deltaX[5] + constraint.elements[1].beginPoint.point.y + deltaX[3] - 2*constraint.elements[0].point.y - 2*deltaX[1]],               //dx2
+                        constraint.elements[1].endPoint.point.y + deltaX[5] + constraint.elements[1].beginPoint.point.y + deltaX[3] - 2*constraint.elements[0].point.y - 2*deltaX[1]],      //dx2
                     [deltaX[6], 0, -2*deltaX[6], 1, deltaX[6], 0,
                         constraint.elements[1].endPoint.point.x + deltaX[4] + constraint.elements[1].beginPoint.point.x + deltaX[2] - 2*constraint.elements[0].point.x - 2*deltaX[0]],      //dy2
                     [0, -deltaX[6], 0, deltaX[6], 1, 0,
@@ -441,7 +442,7 @@ class JacobiansMap {
                     deltaX[5] + 2*deltaX[8] * (d * (a**2 + c**2) * cos(params.angle)**2 - c * (a*b + c*d)),     //  dF/dy3
                     deltaX[6] + 2*deltaX[8] * (a * (a*b + c*d) - b * (a**2 + c**2) * cos(params.angle)**2),     //  dF/dx4
                     deltaX[7] + 2*deltaX[8] * (c * (a*b + c*d) - d * (a**2 + c**2) * cos(params.angle)**2),     //  dF/dy4
-                    ((a*b + c*d) - (a**2 + c**2) * (b**2 + d**2) * cos(params.angle)**2) ];   //  dF/dlambda
+                    ((a*b + c*d) * (a*b + c*d) - (a**2 + c**2) * (b**2 + d**2) * cos(params.angle)**2) ];   //  dF/dlambda
                 break;
             }
             case Constraint.constraintMap.pointToLine: {
