@@ -30,7 +30,7 @@ export default class Constraint {
         // params.distance = что-то
         // params.angle = угол
 
-        this.isNeedSolve = true;
+        this.isNeedSolving = true;
     }
 
     getPoints() {

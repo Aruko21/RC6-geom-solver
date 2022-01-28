@@ -10,7 +10,7 @@ const math = create(all)
 
 export default class Solver {
     constructor() {
-        this.EPS = 1e-6;
+        this.EPS = 1e-9;
         this.MAX_ITERATIONS_NUM = 1e2;
         this.INITIAL_VALUE = 1e-5;
         this.gaussSolver = new GaussSolver();
@@ -19,12 +19,21 @@ export default class Solver {
         this.gaussianElimination = new GaussianElimination();
     }
 
-    solve(constraints) {
-        // Выделить ограничения, для которых нужно производить решение
-        // Причем фильтруем только, если ограничений больше одного
-        // let needSolvingConstraints = this._filterConstraints(constraints);
+    solve(constraints, primitive = null) {
 
-        let needSolvingConstraints = [...constraints];
+        let needSolvingPoints = [];
+        let needSolvingConstraints = [];
+        // Если был передан примитив, то осуществлялось передвижение - получаем точки
+        if (primitive) {
+            needSolvingPoints.push([...primitive.getPoints()]);
+        } else {
+            // Если примитива не было, то добавили новое ограничение, начинаем поиск с его примитивов
+            needSolvingConstraints.push([...(constraints.filter(constraint => constraint.isNeedSolving))]);
+            needSolvingPoints.push([...needSolvingConstraints.map(c => c.getPoints())]);
+        }
+
+        // Получаем окончательный список ограничений, подлежащих решению
+        needSolvingConstraints = this._filterConstraints(needSolvingConstraints, needSolvingPoints, constraints);
 
         // Создать глобальный вектор неизвестных
         // Сначала затем изменения координат (x и y), затем лямбды и так для каждого ограничения: [dx_i, dy_i, lambda_i]
@@ -77,39 +86,23 @@ export default class Solver {
         constraints.forEach(constraint => constraint.isNeedSolve = false);
     }
 
-    _filterConstraints(constraints) {
-        let needSolvingConstraints = [];
-        let needSolvingPoints = [];
-
-
-
-        // Пока что считаем, что последнее ограничение либо новое, либо содержит объекты, изменяющие свое положение
-        let needSolvingConstraint = constraints[constraints.length - 1];
-        needSolvingConstraints.push(needSolvingConstraint);
-        needSolvingPoints.push([...needSolvingConstraint.getPoints()]);
-        for (let i = 0; i < constraints.length - 1; i++) {
-            constraints.forEach(constraint => {
-                this._checkPointsOfConstraintRecursive(constraint.getPoints(), constraint,
-                    needSolvingPoints, needSolvingConstraints)
-
-                // let points = constraint.getPoints();
-                // for (let j = 0; j < points.length; j++) {
-                //     if (points[j] in needSolvingPoints) {
-                //         needSolvingPoints.push([...points]);
-                //         needSolvingConstraints.push(constraint);
-                //         break;
-                //     }
-                // }
-            });
-        }
+    _filterConstraints(needSolvingConstraints, needSolvingPoints, constraints) {
+        // Идем по всем ограничениям
+        constraints.forEach(constraint => {
+            this._checkPointsOfConstraintRecursive(constraint.getPoints(), constraint,
+                needSolvingPoints, needSolvingConstraints)
+        });
 
         return needSolvingConstraints;
     }
 
     _checkPointsOfConstraintRecursive(points, constraint, needSolvingPoints, needSolvingConstraints) {
+        // Идем по всем точкам
         for (let j = 0; j < points.length; j++) {
+            // Проверяем, находится ли данная точка внутри этого ограничения
             if (points[j] in needSolvingPoints) {
-                needSolvingPoints.push([...points]);
+                // Если находится, то нужно добавить в начало все ее точки
+                needSolvingPoints.unshift([...points]);
                 needSolvingConstraints.push(constraint);
                 return this._checkPointsOfConstraintRecursive(points, constraint, needSolvingPoints, needSolvingConstraints);
             }

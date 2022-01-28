@@ -24,6 +24,8 @@ export default class PointDot extends Primitive {
         this.globalId = null;
         this.moveCallback = null;
 
+        this.uniqueId = null;
+
         this.init();
     }
 
