@@ -67,7 +67,7 @@ export default class App {
             // this.uicore.project.hitTestAll(event.point);
         // }
 
-        this.canvasField.addEventListener("needSolve", () => this.solver.solve(this.constraints));
+        this.canvasField.addEventListener("needSolve", (event) => this.solver.solve(this.constraints, event.detail.moveItem));
     }
 
     initGui() {

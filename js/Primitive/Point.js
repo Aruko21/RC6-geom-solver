@@ -50,7 +50,9 @@ export default class PointDot extends Primitive {
                 && (Math.abs(deltaX) <= 50 || Math.abs(deltaY) <= 50))
             {
                 this.moveDelta(new this.uicore.Point(deltaX, deltaY));
-                this.eventScope.dispatchEvent(new CustomEvent("needSolve"));
+                this.eventScope.dispatchEvent(new CustomEvent("needSolve", { detail: {
+                    moveItem: this
+                }}));
             } else if (Math.abs(deltaX) >= 50 || Math.abs(deltaY) >= 50) {
                 console.log("delta is more than 50");
             }
