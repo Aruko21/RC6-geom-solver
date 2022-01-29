@@ -15,7 +15,7 @@ export default class Solver {
         this.INITIAL_VALUE = 1e-5;
         this.gaussSolver = new GaussSolver();
 
-        GaussianElimination.defaultOptions.pivoting = 'partial';
+        GaussianElimination.defaultOptions.pivoting = 'complete';
         this.gaussianElimination = new GaussianElimination();
 
         // this.globalPointToConstraintsMap = new Map();

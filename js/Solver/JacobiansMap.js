@@ -244,11 +244,11 @@ class JacobiansMap {
                         2 * deltaX[8] * (c ** 2 - (a ** 2 + c ** 2) * cos(params.angle) ** 2),
                         2 * (c * (a * b + c * d) - d * (a ** 2 + c ** 2) * cos(params.angle) ** 2)],    //dy4
                     [2 * deltaX[8] * (2 * a * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - b),
-                        2 * deltaX[8] * (2 * c * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - d), ,
+                        2 * deltaX[8] * (2 * c * (b ** 2 + d ** 2) * cos(params.angle) ** 2 - d),
                         2 * deltaX[8] * (b - 2 * a * (b ** 2 + d ** 2) * cos(params.angle) ** 2),
                         2 * deltaX[8] * (d - 2 * c * (b ** 2 + d ** 2) * cos(params.angle) ** 2),
                         2 * deltaX[8] * (2 * b * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - a),
-                        2 * deltaX[8] * (2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - c), ,
+                        2 * deltaX[8] * (2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2 - c),
                         2 * deltaX[8] * (a - 2 * b * (a ** 2 + c ** 2) * cos(params.angle) ** 2),
                         2 * deltaX[8] * (c - 2 * d * (a ** 2 + c ** 2) * cos(params.angle) ** 2), 0]    //lambda
                 ];
