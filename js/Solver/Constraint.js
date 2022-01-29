@@ -35,7 +35,7 @@ export default class Constraint {
 
     getPoints() {
         let allPoints = [];
-        this.elements.forEach(primitive => allPoints.push(primitive.getPoints()));
+        this.elements.forEach(primitive => allPoints.push(...primitive.getPoints()));
         return allPoints;
     }
 }
