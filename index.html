@@ -17,29 +17,22 @@
 
 <div class="container-fluid">
     <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <nav id="sidebar-menu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse px-2">
             <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">
-                            Constraints
-                        </a>
-                    </li>
-                </ul>
-
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>Section</span>
-                    <a class="link-secondary" href="#">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                </h6>
-                <ul class="nav flex-column mb-2">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Current month
-                        </a>
-                    </li>
-                </ul>
+                <div class="gs-sidebar__block">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Primitives</span>
+                    </h6>
+                    <ul id="primitives-list" class="nav flex-column mb-2">
+                    </ul>
+                </div>
+                <div class="gs-sidebar__block">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Constraints</span>
+                    </h6>
+                    <ul id="constraints-list" class="nav flex-column mb-2">
+                    </ul>
+                </div>
             </div>
         </nav>
 

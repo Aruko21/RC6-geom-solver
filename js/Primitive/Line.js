@@ -61,8 +61,8 @@ export default class Line extends Primitive {
             this.lineView.translate(event.delta);
             this.beginPoint.moveDelta(event.delta);
             this.endPoint.moveDelta(event.delta);
-            this.eventScope.dispatchEvent(new CustomEvent("needSolve", { detail: {
-                moveItem: this
+            this.eventScope.dispatchEvent(new CustomEvent("primitiveMove", { detail: {
+                item: this
             }}));
         }
         this.lineView.onMouseMove = () => {

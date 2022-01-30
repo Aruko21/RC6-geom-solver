@@ -1,7 +1,16 @@
 @import "custom";
 @import "~bootstrap/scss/bootstrap";
 
-.gs-draw-field {
-  height: 100%;
-  width: 100%;
+.gs- {
+  &draw-field {
+    height: 100%;
+    width: 100%;
+  }
+
+  &sidebar {
+    &__block {
+      height: 50%;
+      overflow: auto;
+    }
+  }
 }

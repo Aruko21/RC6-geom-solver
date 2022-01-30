@@ -1,3 +1,4 @@
+import Sidebar from "./Sidebar";
 import Action from "./Action";
 import Solver from "./Solver/Solver";
 import Plotter from "./Plotter";
@@ -11,8 +12,14 @@ export default class App {
 
         this.primitives = [];
         this.constraints = [];
+        this.primitveToConstraintsMap = {};
 
         this.currentAction = new Action();
+        this.sidebar = new Sidebar({
+            eventScope: this.canvasField,
+            primitives: this.primitives,
+            constraints: this.constraints
+        });
         this.solver = new Solver();
         this.plotter = new Plotter({
             callback: (primitive) => {
@@ -26,10 +33,11 @@ export default class App {
         this.constraintManager = new ConstraintsManager({
             callback: (constraint) => {
                 this.constraints.push(constraint);
-                this.canvasField.dispatchEvent(new CustomEvent("needSolve"));
+                this.addConstraintToMap(constraint);
                 this.updateActionState(Action.actionsMap.edit);
 
                 console.log("add constraint: ", constraint);
+                this.canvasField.dispatchEvent(new CustomEvent("constraintAdd"));
             },
             eventScope: this.canvasField
         })
@@ -66,14 +74,11 @@ export default class App {
         //     Catch hover on every item
             // this.uicore.project.hitTestAll(event.point);
         // }
-
-        this.canvasField.addEventListener("needSolve", (event) => {
-            let primitive = null;
-            if (event.detail && event.detail.moveItem) {
-                primitive = event.detail.moveItem
-            }
-
-            this.solver.solve(this.constraints, primitive);
+        this.canvasField.addEventListener("primitiveMove", (event) => {
+            this.solver.solve(this.constraints, event.detail.item);
+        });
+        this.canvasField.addEventListener("constraintAdd", (event) => {
+            this.solver.solve(this.constraints);
         });
     }
 
@@ -106,5 +111,15 @@ export default class App {
         console.log(`action state update on '${actionType}' type with '${actionObject}' object`);
         this.currentAction.type = actionType;
         this.currentAction.object = actionObject;
+    }
+
+    addConstraintToMap(constraint) {
+        constraint.elements.forEach((primitive) => {
+            if (this.primitveToConstraintsMap[primitive.id] != null) {
+                this.primitveToConstraintsMap[primitive.id].push(constraint);
+            } else {
+                this.primitveToConstraintsMap[primitive.id] = [constraint,]
+            }
+        });
     }
 }

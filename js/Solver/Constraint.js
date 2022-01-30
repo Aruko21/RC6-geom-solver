@@ -2,6 +2,8 @@ import jacobiansMap from "./JacobiansMap";
 import {all} from "mathjs";
 
 export default class Constraint {
+    static uniqueId = 1;
+
     static constraintMap = {
         joint: "joint",
         distance: "distance",
@@ -19,6 +21,7 @@ export default class Constraint {
         type,
         params
     }) {
+        this.id = Constraint.uniqueId++;
         // список элементов, участвующих в ограничении (точки и линии)
         this.elements = elements;
 
