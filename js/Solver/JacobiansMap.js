@@ -477,8 +477,8 @@ class JacobiansMap {
                 */
                 f = [deltaX[0] + deltaX[2],                      //  dF/dx1
                     deltaX[1] + deltaX[3],                       //  dF/dy1
-                    constraint.elements[0].point.x + deltaX[0],  //  dF/dlambda1
-                    constraint.elements[0].point.y + deltaX[1]]; //  dF/dlambda2
+                    deltaX[0],  //  dF/dlambda1
+                    deltaX[1]]; //  dF/dlambda2
                 break;
             }
             default: {
